@@ -2,33 +2,55 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Card } from "@/components/ui/card"
-import { getMoveDetails, getTasks, saveMoveDetails } from "@/app/lib/storage"
-import { MoveDetails, Task } from "@/app/lib/types"
-import { Calendar, CheckCircle2, MapPin, AlertCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { getMoveDetails, getTasks, saveMoveDetails, getTimelineEvents, addTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from "@/app/lib/storage"
+import { MoveDetails, Task, TimelineEvent as CustomTimelineEvent } from "@/app/lib/types"
+import { Calendar, CheckCircle2, MapPin, AlertCircle, Plus, Edit, Trash2, Star } from "lucide-react"
 import { formatDate } from "@/components/house-prep/constants"
 import Link from "next/link"
+import { TimelineEventForm } from "@/components/timeline-event-form"
+import { DeleteConfirmDialog } from "@/components/house-prep/delete-confirm-dialog"
 
-interface TimelineEvent {
+interface DisplayTimelineEvent {
   id: string
   date: Date
-  type: "start" | "task" | "move"
+  type: "start" | "task" | "move" | "custom"
   title: string
   description?: string
   task?: Task
+  customEvent?: CustomTimelineEvent
   isCompleted?: boolean
 }
 
 export default function TimelinePage() {
   const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
+  const [customEvents, setCustomEvents] = useState<CustomTimelineEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [editingEvent, setEditingEvent] = useState<CustomTimelineEvent | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [editingStartDate, setEditingStartDate] = useState(false)
+  const [startDateValue, setStartDateValue] = useState("")
 
   useEffect(() => {
     const loadData = () => {
       const details = getMoveDetails()
       const taskList = getTasks()
+      const events = getTimelineEvents()
       setMoveDetails(details)
       setTasks(taskList)
+      setCustomEvents(events)
       setIsLoading(false)
     }
 
@@ -36,7 +58,7 @@ export default function TimelinePage() {
 
     // Listen for storage changes
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "move-hub-move-details" || e.key === "move-hub-house-prep-tasks") {
+      if (e.key === "move-hub-move-details" || e.key === "move-hub-house-prep-tasks" || e.key === "move-hub-timeline-events") {
         loadData()
       }
     }
@@ -45,13 +67,21 @@ export default function TimelinePage() {
     return () => window.removeEventListener("storage", handleStorageChange)
   }, [])
 
+  // Initialize start date value for editing
+  useEffect(() => {
+    if (moveDetails?.createdDate && startDateValue === "") {
+      const dateStr = new Date(moveDetails.createdDate).toISOString().split("T")[0]
+      setStartDateValue(dateStr)
+    }
+  }, [moveDetails?.createdDate, startDateValue])
+
   const timelineEvents = useMemo(() => {
     if (!moveDetails?.moveDate) return []
 
-    const events: TimelineEvent[] = []
+    const events: DisplayTimelineEvent[] = []
 
     // Add start date event (when move details were created, or today as fallback)
-    const startDate = moveDetails.createdDate
+    let startDate = moveDetails.createdDate
       ? new Date(moveDetails.createdDate)
       : new Date() // Use today's date as fallback
 
@@ -63,6 +93,7 @@ export default function TimelinePage() {
       }
       saveMoveDetails(updatedDetails)
       setMoveDetails(updatedDetails)
+      startDate = new Date()
     }
 
     events.push({
@@ -97,11 +128,44 @@ export default function TimelinePage() {
         })
       })
 
+    // Add custom timeline events
+    customEvents.forEach((customEvent) => {
+      events.push({
+        id: customEvent.id,
+        date: new Date(customEvent.date),
+        type: "custom",
+        title: customEvent.title,
+        description: customEvent.description,
+        customEvent,
+      })
+    })
+
     // Sort events by date
     return events.sort((a, b) => a.date.getTime() - b.date.getTime())
-  }, [moveDetails, tasks])
+  }, [moveDetails, tasks, customEvents])
 
-  const getEventIcon = (type: TimelineEvent["type"], isCompleted?: boolean) => {
+  const handleSaveEvent = (eventData: Omit<CustomTimelineEvent, "id"> | CustomTimelineEvent) => {
+    if ("id" in eventData && eventData.id) {
+      // Editing existing event
+      updateTimelineEvent(eventData.id, eventData)
+      setCustomEvents(customEvents.map((e) => (e.id === eventData.id ? eventData : e)))
+    } else {
+      // Adding new event
+      const newEvent = addTimelineEvent(eventData as Omit<CustomTimelineEvent, "id">)
+      setCustomEvents([...customEvents, newEvent])
+    }
+    setEditingEvent(null)
+    setShowAddForm(false)
+  }
+
+  const handleDeleteEvent = (id: string) => {
+    if (deleteTimelineEvent(id)) {
+      setCustomEvents(customEvents.filter((e) => e.id !== id))
+    }
+    setDeleteConfirm(null)
+  }
+
+  const getEventIcon = (type: DisplayTimelineEvent["type"], isCompleted?: boolean) => {
     switch (type) {
       case "start":
         return <MapPin className="w-5 h-5 text-primary" />
@@ -113,10 +177,12 @@ export default function TimelinePage() {
         ) : (
           <AlertCircle className="w-5 h-5 text-muted-foreground" />
         )
+      case "custom":
+        return <Star className="w-5 h-5 text-purple-500" />
     }
   }
 
-  const getEventColor = (type: TimelineEvent["type"], isCompleted?: boolean) => {
+  const getEventColor = (type: DisplayTimelineEvent["type"], isCompleted?: boolean) => {
     switch (type) {
       case "start":
         return "border-primary bg-primary/5"
@@ -126,6 +192,8 @@ export default function TimelinePage() {
         return isCompleted
           ? "border-progress-color bg-progress-color/5"
           : "border-border bg-card"
+      case "custom":
+        return "border-purple-500 bg-purple-500/5"
     }
   }
 
@@ -172,8 +240,19 @@ export default function TimelinePage() {
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Header */}
       <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-8">
-        <h1 className="text-3xl font-bold mb-2">Timeline</h1>
-        <p className="text-primary-foreground/90">Plan your moving timeline and milestones</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Timeline</h1>
+            <p className="text-primary-foreground/90">Plan your moving timeline and milestones</p>
+          </div>
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Event
+          </Button>
+        </div>
       </Card>
 
       {timelineEvents.length === 0 ? (
@@ -276,6 +355,50 @@ export default function TimelinePage() {
                           </div>
                         </div>
                       )}
+
+                      {event.type === "start" && (
+                        <div className="mt-4 pt-4 border-t border-border/50">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-primary font-medium">Planning Start Date</span>
+                            <button
+                              onClick={() => {
+                                const dateStr = event.date.toISOString().split("T")[0]
+                                setStartDateValue(dateStr)
+                                setEditingStartDate(true)
+                              }}
+                              className="ml-auto p-1.5 hover:bg-primary/10 rounded-lg transition-colors"
+                            >
+                              <Edit className="w-4 h-4 text-primary" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {event.type === "custom" && (
+                        <div className="mt-4 pt-4 border-t border-border/50">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-purple-600 font-medium">Custom Event</span>
+                            <div className="ml-auto flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  if (event.customEvent) {
+                                    setEditingEvent(event.customEvent)
+                                  }
+                                }}
+                                className="p-1.5 hover:bg-purple-100 rounded-lg transition-colors"
+                              >
+                                <Edit className="w-4 h-4 text-purple-600" />
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirm(event.id)}
+                                className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </div>
@@ -284,6 +407,83 @@ export default function TimelinePage() {
           </div>
         </div>
       )}
+
+      {/* Event Form Dialog */}
+      <TimelineEventForm
+        event={editingEvent}
+        open={showAddForm || editingEvent !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowAddForm(false)
+            setEditingEvent(null)
+          }
+        }}
+        onSave={handleSaveEvent}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteConfirm !== null}
+        type="event"
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+        onConfirm={() => {
+          if (deleteConfirm) {
+            handleDeleteEvent(deleteConfirm)
+          }
+        }}
+      />
+
+      {/* Edit Start Date Dialog */}
+      <Dialog open={editingStartDate} onOpenChange={setEditingStartDate}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Edit Planning Start Date</DialogTitle>
+            <DialogDescription>
+              When did you actually start planning your move?
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (moveDetails && startDateValue) {
+                const dateTime = new Date(startDateValue)
+                dateTime.setHours(12, 0, 0, 0)
+                const updatedDetails = {
+                  ...moveDetails,
+                  createdDate: dateTime.toISOString(),
+                }
+                saveMoveDetails(updatedDetails)
+                setMoveDetails(updatedDetails)
+                setEditingStartDate(false)
+              }
+            }}
+          >
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="startDate">Start Date *</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={startDateValue}
+                  onChange={(e) => setStartDateValue(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditingStartDate(false)}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="w-full sm:w-auto">Save Date</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

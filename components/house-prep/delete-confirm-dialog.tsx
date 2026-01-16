@@ -12,7 +12,7 @@ import {
 
 interface DeleteConfirmDialogProps {
   open: boolean
-  type: "task" | "expense"
+  type: "task" | "expense" | "event"
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
 }
@@ -23,13 +23,15 @@ export function DeleteConfirmDialog({
   onOpenChange,
   onConfirm,
 }: DeleteConfirmDialogProps) {
+  const typeLabel = type === "task" ? "Task" : type === "expense" ? "Expense" : "Event"
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="mx-4 sm:mx-auto">
         <DialogHeader>
-          <DialogTitle>Delete {type === "task" ? "Task" : "Expense"}</DialogTitle>
+          <DialogTitle>Delete {typeLabel}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this {type}? This action cannot be undone.
+            Are you sure you want to delete this {typeLabel.toLowerCase()}? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">

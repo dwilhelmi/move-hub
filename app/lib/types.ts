@@ -32,3 +32,10 @@ export interface MoveDetails {
   moveDate: string // ISO date string with time
   createdDate?: string // ISO date string - when move details were first created
 }
+
+export interface TimelineEvent {
+  id: string
+  title: string
+  description?: string
+  date: string // ISO date string
+}

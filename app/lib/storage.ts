@@ -1,11 +1,12 @@
 "use client"
 
-import { Task, Expense, MoveDetails } from "./types"
+import { Task, Expense, MoveDetails, TimelineEvent } from "./types"
 
 const STORAGE_KEYS = {
   TASKS: "move-hub-house-prep-tasks",
   EXPENSES: "move-hub-house-prep-expenses",
   MOVE_DETAILS: "move-hub-move-details",
+  TIMELINE_EVENTS: "move-hub-timeline-events",
 } as const
 
 // Task storage functions
@@ -165,6 +166,67 @@ export function saveMoveDetails(details: MoveDetails): void {
   } catch (error) {
     console.error("Error saving move details to localStorage:", error)
   }
+}
+
+// Timeline events storage functions
+export function getTimelineEvents(): TimelineEvent[] {
+  if (typeof window === "undefined") return []
+  
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.TIMELINE_EVENTS)
+    return stored ? JSON.parse(stored) : []
+  } catch (error) {
+    console.error("Error reading timeline events from localStorage:", error)
+    return []
+  }
+}
+
+export function saveTimelineEvents(events: TimelineEvent[]): void {
+  if (typeof window === "undefined") return
+  
+  try {
+    localStorage.setItem(STORAGE_KEYS.TIMELINE_EVENTS, JSON.stringify(events))
+  } catch (error) {
+    console.error("Error saving timeline events to localStorage:", error)
+  }
+}
+
+export function addTimelineEvent(event: Omit<TimelineEvent, "id">): TimelineEvent {
+  const events = getTimelineEvents()
+  const newEvent: TimelineEvent = {
+    ...event,
+    id: crypto.randomUUID(),
+  }
+  saveTimelineEvents([...events, newEvent])
+  return newEvent
+}
+
+export function updateTimelineEvent(id: string, updates: Partial<TimelineEvent>): TimelineEvent | null {
+  const events = getTimelineEvents()
+  const index = events.findIndex((event) => event.id === id)
+  
+  if (index === -1) return null
+  
+  const updatedEvent = {
+    ...events[index],
+    ...updates,
+  }
+  
+  const updatedEvents = [...events]
+  updatedEvents[index] = updatedEvent
+  saveTimelineEvents(updatedEvents)
+  
+  return updatedEvent
+}
+
+export function deleteTimelineEvent(id: string): boolean {
+  const events = getTimelineEvents()
+  const filtered = events.filter((event) => event.id !== id)
+  
+  if (filtered.length === events.length) return false
+  
+  saveTimelineEvents(filtered)
+  return true
 }
 
 // Logout function - clears all localStorage data
