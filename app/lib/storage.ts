@@ -160,7 +160,7 @@ export function saveMoveDetails(details: MoveDetails): void {
     const existing = getMoveDetails()
     const detailsToSave: MoveDetails = {
       ...details,
-      createdDate: existing?.createdDate || details.createdDate || new Date().toISOString()
+      createdDate: details.createdDate || existing?.createdDate || new Date().toISOString()
     }
     localStorage.setItem(STORAGE_KEYS.MOVE_DETAILS, JSON.stringify(detailsToSave))
   } catch (error) {

@@ -59,13 +59,15 @@ export function MoveDetailsForm({
     const moveDateISO = formData.moveDate
       ? new Date(formData.moveDate).toISOString()
       : ""
-    
+
     const details: MoveDetails = {
       fromLocation: formData.fromLocation.trim(),
       toLocation: formData.toLocation.trim(),
       moveDate: moveDateISO,
+      // Preserve existing createdDate when editing, or set to now for new entries
+      createdDate: moveDetails?.createdDate || new Date().toISOString(),
     }
-    
+
     onSave(details)
     onOpenChange(false)
   }
