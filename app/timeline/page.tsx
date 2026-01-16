@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,6 +42,7 @@ export default function TimelinePage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [editingStartDate, setEditingStartDate] = useState(false)
   const [startDateValue, setStartDateValue] = useState("")
+  const todayMarkerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const loadData = () => {
@@ -74,6 +75,19 @@ export default function TimelinePage() {
       setStartDateValue(dateStr)
     }
   }, [moveDetails?.createdDate, startDateValue])
+
+  // Scroll to today marker on load
+  useEffect(() => {
+    if (!isLoading && todayMarkerRef.current) {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        todayMarkerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        })
+      }, 100)
+    }
+  }, [isLoading])
 
   const timelineEvents = useMemo(() => {
     if (!moveDetails?.moveDate) return []
@@ -278,8 +292,33 @@ export default function TimelinePage() {
               const isToday = daysUntil === 0
               const isUpcoming = daysUntil > 0
 
+              // Check if we need to show "Today" marker before this event
+              const prevEvent = index > 0 ? timelineEvents[index - 1] : null
+              const prevDaysUntil = prevEvent ? calculateDaysUntil(prevEvent.date) : null
+              // Show marker between past and future events, or at start if first event is future
+              const showTodayMarker =
+                (prevDaysUntil !== null && prevDaysUntil < 0 && daysUntil > 0) ||
+                (index === 0 && daysUntil > 0)
+
               return (
-                <div key={event.id} className="relative flex items-center gap-6">
+                <div key={event.id}>
+                  {/* Today marker - shows between past and future events */}
+                  {showTodayMarker && (
+                    <div ref={todayMarkerRef} className="relative flex items-center gap-6 mb-8">
+                      <div className="relative z-10 flex items-center justify-center w-16 h-8 shrink-0">
+                        <div className="w-4 h-4 rounded-full bg-amber-500 border-4 border-amber-200 shadow-lg" />
+                      </div>
+                      <div className="flex-1 flex items-center gap-3">
+                        <div className="h-0.5 flex-1 bg-gradient-to-r from-amber-500 to-transparent" />
+                        <span className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                          Today
+                        </span>
+                        <div className="h-0.5 flex-1 bg-gradient-to-l from-amber-500 to-transparent" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="relative flex items-center gap-6">
                   {/* Icon */}
                   <span className="bg-white rounded-full">
                     <div
@@ -401,9 +440,27 @@ export default function TimelinePage() {
                       )}
                     </div>
                   </Card>
+                  </div>
                 </div>
               )
             })}
+
+            {/* Today marker at the end if all events are in the past */}
+            {timelineEvents.length > 0 &&
+              calculateDaysUntil(timelineEvents[timelineEvents.length - 1].date) < 0 && (
+                <div ref={todayMarkerRef} className="relative flex items-center gap-6">
+                  <div className="relative z-10 flex items-center justify-center w-16 h-8 shrink-0">
+                    <div className="w-4 h-4 rounded-full bg-amber-500 border-4 border-amber-200 shadow-lg" />
+                  </div>
+                  <div className="flex-1 flex items-center gap-3">
+                    <div className="h-0.5 flex-1 bg-gradient-to-r from-amber-500 to-transparent" />
+                    <span className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                      Today
+                    </span>
+                    <div className="h-0.5 flex-1 bg-gradient-to-l from-amber-500 to-transparent" />
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       )}
