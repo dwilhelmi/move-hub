@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
-import { ArrowRight, Wrench } from "lucide-react"
-import { getTasks, getMoveDetails, saveMoveDetails } from "@/app/lib/storage"
+import { Plus, DollarSign } from "lucide-react"
+import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense } from "@/app/lib/storage"
+import { Task, Expense } from "@/app/lib/types"
+import { TaskForm } from "@/components/task-form"
+import { ExpenseForm } from "@/components/expense-form"
 import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
@@ -21,6 +24,8 @@ export default function Home() {
   const [tasksCompleted, setTasksCompleted] = useState(0)
   const [totalTasks, setTotalTasks] = useState(0)
   const [showMoveDetailsForm, setShowMoveDetailsForm] = useState(false)
+  const [showTaskForm, setShowTaskForm] = useState(false)
+  const [showExpenseForm, setShowExpenseForm] = useState(false)
 
   useEffect(() => {
     // Load move details from storage
@@ -69,6 +74,21 @@ export default function Home() {
       clearInterval(interval)
     }
   }, [])
+
+  const handleSaveTask = (taskData: Omit<Task, "id">) => {
+    addTask(taskData)
+    // Refresh task stats
+    const tasks = getTasks()
+    const completed = tasks.filter((task) => task.status === "completed").length
+    setTasksCompleted(completed)
+    setTotalTasks(tasks.length)
+    setShowTaskForm(false)
+  }
+
+  const handleSaveExpense = (expenseData: Omit<Expense, "id">) => {
+    addExpense(expenseData)
+    setShowExpenseForm(false)
+  }
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
@@ -132,21 +152,42 @@ export default function Home() {
       {/* Quick Actions */}
       <Card className="p-6">
         <CardTitle className="text-xl font-bold mb-4">Quick Actions</CardTitle>
-        <Link href="/house-prep">
-          <button className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-semibold">House Prep Tracker</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            onClick={() => setShowTaskForm(true)}
+            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+          >
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <Plus className="w-5 h-5 text-primary-foreground" />
             </div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            <span className="font-semibold">Add Task</span>
           </button>
-        </Link>
+          <button
+            onClick={() => setShowExpenseForm(true)}
+            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+          >
+            <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-semibold">Add Expense</span>
+          </button>
+        </div>
         <p className="text-center text-sm text-muted-foreground mt-4">
           Inventory and Budget coming soon
         </p>
       </Card>
+
+      <TaskForm
+        open={showTaskForm}
+        onOpenChange={setShowTaskForm}
+        onSave={handleSaveTask}
+      />
+
+      <ExpenseForm
+        open={showExpenseForm}
+        onOpenChange={setShowExpenseForm}
+        onSave={handleSaveExpense}
+      />
     </div>
   )
 }
