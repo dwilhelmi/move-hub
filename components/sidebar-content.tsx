@@ -17,7 +17,7 @@ import {
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home, active: true },
   { name: "House Prep", href: "/house-prep", icon: Hammer, active: true },
-  { name: "Timeline", href: "/timeline", icon: Calendar, active: false },
+  { name: "Timeline", href: "/timeline", icon: Calendar, active: true },
   { name: "Inventory", href: "/inventory", icon: Package, active: false },
   { name: "Budget", href: "/budget", icon: DollarSign, active: false },
   { name: "SF Guide", href: "/sf-guide", icon: MapPin, active: false },

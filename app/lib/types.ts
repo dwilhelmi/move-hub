@@ -30,4 +30,5 @@ export interface MoveDetails {
   fromLocation: string
   toLocation: string
   moveDate: string // ISO date string with time
+  createdDate?: string // ISO date string - when move details were first created
 }

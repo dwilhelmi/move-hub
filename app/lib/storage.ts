@@ -155,7 +155,13 @@ export function saveMoveDetails(details: MoveDetails): void {
   if (typeof window === "undefined") return
   
   try {
-    localStorage.setItem(STORAGE_KEYS.MOVE_DETAILS, JSON.stringify(details))
+    // If this is the first time saving and no createdDate exists, set it to today
+    const existing = getMoveDetails()
+    const detailsToSave: MoveDetails = {
+      ...details,
+      createdDate: existing?.createdDate || details.createdDate || new Date().toISOString()
+    }
+    localStorage.setItem(STORAGE_KEYS.MOVE_DETAILS, JSON.stringify(detailsToSave))
   } catch (error) {
     console.error("Error saving move details to localStorage:", error)
   }
