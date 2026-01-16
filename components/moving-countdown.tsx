@@ -66,7 +66,7 @@ export function MovingCountdown({ targetDate }: MovingCountdownProps) {
   
   // Initialize with cached value if available and target date matches, otherwise calculate immediately
   const initialTimeRemaining = hasPreviousValue 
-    ? cachedTimeRemaining 
+    ? cachedTimeRemaining! 
     : calculateTimeRemaining(targetDate)
   
   const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>(initialTimeRemaining)

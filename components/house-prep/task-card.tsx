@@ -3,6 +3,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Task } from "@/app/lib/types"
 import { Edit, Trash2, ChevronDown } from "lucide-react"
+import { formatDate } from "./constants"
 
 interface TaskCardProps {
   task: Task
