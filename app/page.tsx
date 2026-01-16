@@ -144,7 +144,7 @@ export default function Home() {
           </button>
         </Link>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          Timeline, Inventory, Budget, and SF Guide coming soon
+          Inventory and Budget coming soon
         </p>
       </Card>
     </div>

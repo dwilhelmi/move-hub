@@ -10,7 +10,6 @@ import {
   Calendar,
   Package,
   DollarSign,
-  MapPin,
   LogOut,
 } from "lucide-react"
 
@@ -20,7 +19,6 @@ const navigation = [
   { name: "Timeline", href: "/timeline", icon: Calendar, active: true },
   { name: "Inventory", href: "/inventory", icon: Package, active: false },
   { name: "Budget", href: "/budget", icon: DollarSign, active: false },
-  { name: "SF Guide", href: "/sf-guide", icon: MapPin, active: false },
 ]
 
 interface SidebarContentProps {
