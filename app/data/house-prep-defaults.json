@@ -1,0 +1,164 @@
+[
+  {
+    "id": "default-1",
+    "title": "Deep clean all rooms",
+    "description": "Thoroughly clean all rooms including baseboards, windows, and hard-to-reach areas",
+    "category": "cleaning",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-2",
+    "title": "Clean carpets and rugs",
+    "description": "Professional carpet cleaning or rent a carpet cleaner",
+    "category": "cleaning",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-3",
+    "title": "Wash windows inside and out",
+    "description": "Clean all windows to maximize natural light",
+    "category": "cleaning",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-4",
+    "title": "Fix leaky faucets",
+    "description": "Repair or replace any dripping faucets",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-5",
+    "title": "Patch nail holes and touch up paint",
+    "description": "Fill holes from wall hangings and repaint affected areas",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-6",
+    "title": "Fix broken tiles or grout",
+    "description": "Replace cracked tiles and repair grout in bathrooms and kitchen",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-7",
+    "title": "Repair squeaky doors and drawers",
+    "description": "Fix hinges and lubricate hardware",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "low",
+    "notes": ""
+  },
+  {
+    "id": "default-8",
+    "title": "Replace burned-out light bulbs",
+    "description": "Ensure all light fixtures have working bulbs",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-9",
+    "title": "Declutter and organize closets",
+    "description": "Remove personal items and organize remaining items neatly",
+    "category": "staging",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-10",
+    "title": "Remove personal photos and items",
+    "description": "Pack away family photos and personal mementos",
+    "category": "staging",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-11",
+    "title": "Stage living areas",
+    "description": "Arrange furniture to maximize space and appeal",
+    "category": "staging",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-12",
+    "title": "Neutralize decor",
+    "description": "Replace bold colors and patterns with neutral tones",
+    "category": "staging",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-13",
+    "title": "Gather repair receipts",
+    "description": "Collect receipts for all repairs and improvements made",
+    "category": "paperwork",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-14",
+    "title": "Prepare disclosure documents",
+    "description": "Organize all required seller disclosure forms",
+    "category": "paperwork",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-15",
+    "title": "Schedule professional photos",
+    "description": "Book professional photographer for listing photos",
+    "category": "photos",
+    "status": "pending",
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "id": "default-16",
+    "title": "Take before photos",
+    "description": "Document current condition before starting prep work",
+    "category": "photos",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-17",
+    "title": "Clean and stage outdoor areas",
+    "description": "Tidy yard, deck, and patio areas for curb appeal",
+    "category": "cleaning",
+    "status": "pending",
+    "priority": "medium",
+    "notes": ""
+  },
+  {
+    "id": "default-18",
+    "title": "Fix loose handles and knobs",
+    "description": "Tighten or replace cabinet handles and door knobs",
+    "category": "repairs",
+    "status": "pending",
+    "priority": "low",
+    "notes": ""
+  }
+]
