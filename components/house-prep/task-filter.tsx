@@ -1,7 +1,5 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -20,14 +18,10 @@ interface TaskFilterProps {
 
 export function TaskFilter({ value, onChange }: TaskFilterProps) {
   return (
-    <Card>
-      <CardContent className="pt-4 sm:pt-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <Label className="text-sm font-medium shrink-0">Filter:</Label>
-          <Select value={value} onValueChange={(value) => onChange(value as FilterType)}>
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
+    <Select value={value} onValueChange={(value) => onChange(value as FilterType)}>
+      <SelectTrigger className="px-4 py-2 bg-secondary border-2 border-border rounded-lg font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-[200px]">
+        <SelectValue />
+      </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Tasks</SelectItem>
               <SelectItem value="pending">Status: Pending</SelectItem>
@@ -39,10 +33,7 @@ export function TaskFilter({ value, onChange }: TaskFilterProps) {
               <SelectItem value="cleaning">Category: Cleaning</SelectItem>
               <SelectItem value="paperwork">Category: Paperwork</SelectItem>
               <SelectItem value="photos">Category: Photos</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardContent>
-    </Card>
+      </SelectContent>
+    </Select>
   )
 }

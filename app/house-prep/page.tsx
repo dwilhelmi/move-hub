@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card } from "@/components/ui/card"
 import { Task, Expense, TaskCategory } from "@/app/lib/types"
 import {
   getTasks,
@@ -150,49 +151,60 @@ export default function HousePrepPage() {
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">House Prep Tracker</h1>
-        <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">
-          Track your progress getting your house ready to sell
-        </p>
-      </div>
+      {/* Header */}
+      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-8">
+        <h1 className="text-3xl font-bold mb-2">House Prep Tracker</h1>
+        <p className="text-primary-foreground/90">Track your progress getting your house ready to sell</p>
+      </Card>
 
       <ProgressOverview
         completedCount={completedCount}
         totalCount={totalCount}
-        className="mb-6 sm:mb-8"
+        className="mb-6"
       />
 
       {/* Tabs */}
-      <Tabs defaultValue="tasks" className="w-full">
-        <TabsList className="grid w-full sm:max-w-md grid-cols-2">
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-        </TabsList>
+      <Card className="overflow-hidden mb-0">
+        <Tabs defaultValue="tasks" className="w-full">
+          <TabsList className="w-full grid grid-cols-2 border-b-2 border-border bg-transparent p-0 h-auto rounded-none">
+            <TabsTrigger 
+              value="tasks"
+              className="flex-1 px-6 py-4 font-semibold text-muted-foreground border-b-4 border-transparent data-[state=active]:text-primary data-[state=active]:border-b-4 data-[state=active]:border-primary data-[state=active]:bg-primary/5 rounded-none"
+            >
+              Tasks
+            </TabsTrigger>
+            <TabsTrigger 
+              value="expenses"
+              className="flex-1 px-6 py-4 font-semibold text-muted-foreground border-b-4 border-transparent data-[state=active]:text-primary data-[state=active]:border-b-4 data-[state=active]:border-primary data-[state=active]:bg-primary/5 rounded-none hover:bg-accent transition-colors"
+            >
+              Expenses
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Tasks Tab */}
-        <TabsContent value="tasks" className="mt-6">
-          <TasksTab
-            tasks={tasks}
-            expandedTasks={expandedTasks}
-            onToggleTask={toggleTask}
-            onToggleExpand={toggleExpanded}
-            onEdit={setEditingTask}
-            onDelete={(id) => setDeleteConfirm({ type: "task", id })}
-            onAddClick={() => setShowAddTaskForm(true)}
-          />
-        </TabsContent>
+          {/* Tasks Tab */}
+          <TabsContent value="tasks" className="p-6 mt-0">
+            <TasksTab
+              tasks={tasks}
+              expandedTasks={expandedTasks}
+              onToggleTask={toggleTask}
+              onToggleExpand={toggleExpanded}
+              onEdit={setEditingTask}
+              onDelete={(id) => setDeleteConfirm({ type: "task", id })}
+              onAddClick={() => setShowAddTaskForm(true)}
+            />
+          </TabsContent>
 
-        {/* Expenses Tab */}
-        <TabsContent value="expenses" className="mt-6">
-          <ExpensesTab
-            expenses={expenses}
-            onEdit={setEditingExpense}
-            onDelete={(id) => setDeleteConfirm({ type: "expense", id })}
-            onAddClick={() => setShowAddExpenseForm(true)}
-          />
-        </TabsContent>
-      </Tabs>
+          {/* Expenses Tab */}
+          <TabsContent value="expenses" className="p-6 mt-0">
+            <ExpensesTab
+              expenses={expenses}
+              onEdit={setEditingExpense}
+              onDelete={(id) => setDeleteConfirm({ type: "expense", id })}
+              onAddClick={() => setShowAddExpenseForm(true)}
+            />
+          </TabsContent>
+        </Tabs>
+      </Card>
 
       {/* Task Form Dialog */}
       <TaskForm

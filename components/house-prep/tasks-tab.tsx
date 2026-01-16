@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Task, TaskCategory, TaskStatus } from "@/app/lib/types"
 import { TaskCard } from "./task-card"
@@ -54,19 +53,20 @@ export function TasksTab({
   }, [filteredTasks])
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-xl sm:text-2xl font-semibold">Tasks</h2>
-        <Button onClick={onAddClick} className="w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-semibold text-muted-foreground">Filter:</span>
+          <TaskFilter value={filter} onChange={setFilter} />
+        </div>
+        <Button onClick={onAddClick} className="flex items-center gap-2 bg-primary hover:bg-primary/90 font-semibold rounded-lg shadow-lg hover:shadow-lg transition-all">
+          <Plus className="w-4 h-4" />
           Add Task
         </Button>
       </div>
 
-      <TaskFilter value={filter} onChange={setFilter} />
-
       {/* Tasks by Category */}
-      <div className="space-y-6">
+      <div className="space-y-3">
         {categoryOrder.map((category) => {
           const categoryTasks = tasksByCategory[category]
           if (categoryTasks.length === 0) return null
@@ -76,31 +76,23 @@ export function TasksTab({
           ).length
 
           return (
-            <Card key={category}>
-              <CardHeader>
-                <CardTitle className="text-xl">
-                  {categoryLabels[category]}
-                  <span className="ml-2 text-sm font-normal text-muted-foreground">
-                    ({categoryCompleted}/{categoryTasks.length})
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {categoryTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      isExpanded={expandedTasks.has(task.id)}
-                      onToggleComplete={onToggleTask}
-                      onToggleExpand={onToggleExpand}
-                      onEdit={onEdit}
-                      onDelete={onDelete}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div key={category} className="space-y-3">
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-lg font-bold">{categoryLabels[category]}</h3>
+                <span className="text-sm text-muted-foreground">({categoryCompleted}/{categoryTasks.length})</span>
+              </div>
+              {categoryTasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  isExpanded={expandedTasks.has(task.id)}
+                  onToggleComplete={onToggleTask}
+                  onToggleExpand={onToggleExpand}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                />
+              ))}
+            </div>
           )
         })}
       </div>

@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
-import { ArrowRight, CheckCircle2 } from "lucide-react"
+import { ArrowRight, Wrench } from "lucide-react"
 import { getTasks, getMoveDetails, saveMoveDetails } from "@/app/lib/storage"
 import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
@@ -73,12 +72,18 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Welcome to Move Hub</h1>
-        <p className="text-muted-foreground text-lg">
-          Your complete companion for planning and executing your move
-        </p>
-      </div>
+      {/* Welcome Banner */}
+      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl overflow-hidden relative">
+        <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <CardHeader className="relative p-8">
+          <CardTitle className="text-4xl font-bold mb-2">
+            Welcome to Move Hub
+          </CardTitle>
+          <CardDescription className="text-primary-foreground/90 text-lg">
+            Your complete companion for planning and executing your move
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       <MoveDetailsCard
         moveDetails={moveDetails}
@@ -88,22 +93,28 @@ export default function Home() {
 
       {/* Quick Stats */}
       {moveDetails?.moveDate && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <MovingCountdown targetDate={new Date(moveDetails.moveDate)} />
 
-          <ProgressOverview
-            completedCount={tasksCompleted}
-            totalCount={totalTasks}
-          />
+          <Link href="/house-prep" className="block">
+            <ProgressOverview
+              completedCount={tasksCompleted}
+              totalCount={totalTasks}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+            />
+          </Link>
         </div>
       )}
 
       {!moveDetails?.moveDate && (
         <div className="mb-8">
-          <ProgressOverview
-            completedCount={tasksCompleted}
-            totalCount={totalTasks}
-          />
+          <Link href="/house-prep" className="block">
+            <ProgressOverview
+              completedCount={tasksCompleted}
+              totalCount={totalTasks}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+            />
+          </Link>
         </div>
       )}
 
@@ -118,28 +129,23 @@ export default function Home() {
         }}
       />
 
-      {/* Quick Links */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Access your active sections</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-3">
-            <Link href="/house-prep">
-              <Button variant="outline" className="w-full justify-between">
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  House Prep Tracker
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <div className="text-sm text-muted-foreground text-center py-2">
-              Timeline, Inventory, Budget, and SF Guide coming soon
+      {/* Quick Actions */}
+      <Card className="p-6">
+        <CardTitle className="text-xl font-bold mb-4">Quick Actions</CardTitle>
+        <Link href="/house-prep">
+          <button className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all group">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Wrench className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="font-semibold">House Prep Tracker</span>
             </div>
-          </div>
-        </CardContent>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+          </button>
+        </Link>
+        <p className="text-center text-sm text-muted-foreground mt-4">
+          Timeline, Inventory, Budget, and SF Guide coming soon
+        </p>
       </Card>
     </div>
   )

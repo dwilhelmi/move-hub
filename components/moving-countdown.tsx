@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { Card } from "@/components/ui/card"
 
 interface MovingCountdownProps {
   targetDate: Date
@@ -51,33 +50,12 @@ function CountdownDigit({ value, label, isLoading, allZero }: { value: number; l
     }
   }, [value, displayValue])
 
-  // Only show loading placeholder if all values are zero and we're still loading
-  if (isLoading && allZero && displayValue === 0) {
-    return (
-      <div className="flex flex-col items-center">
-        <div className="relative w-16 sm:w-20 h-16 sm:h-20 flex items-center justify-center">
-          <span className="text-3xl sm:text-4xl font-bold text-muted-foreground">
-            --
-          </span>
-        </div>
-        <span className="text-xs sm:text-sm text-muted-foreground mt-1">{label}</span>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-16 sm:w-20 h-16 sm:h-20 flex items-center justify-center">
-        <span
-          className={cn(
-            "text-3xl sm:text-4xl font-bold text-primary transition-all duration-300",
-            isChanging && "scale-110 opacity-70"
-          )}
-        >
-          {String(displayValue).padStart(2, "0")}
-        </span>
+    <div className="text-center">
+      <div className="text-3xl font-bold mb-1 text-countdown-foreground transition-all duration-300">
+        {(isLoading && allZero && displayValue === 0) ? "--" : String(displayValue).padStart(2, "0")}
       </div>
-      <span className="text-xs sm:text-sm text-muted-foreground mt-1">{label}</span>
+      <div className="text-xs opacity-80 text-countdown-foreground">{label}</div>
     </div>
   )
 }
@@ -120,42 +98,34 @@ export function MovingCountdown({ targetDate }: MovingCountdownProps) {
   const allZero = timeRemaining.days === 0 && timeRemaining.hours === 0 && timeRemaining.minutes === 0 && timeRemaining.seconds === 0
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Moving Countdown</CardTitle>
-        <CardDescription>Time remaining until your move date</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-center gap-3 sm:gap-6">
-          <CountdownDigit 
-            value={timeRemaining.days} 
-            label="Days" 
-            isLoading={isLoading}
-            allZero={allZero}
-          />
-          <span className="text-2xl sm:text-3xl font-bold text-muted-foreground mb-6">:</span>
-          <CountdownDigit 
-            value={timeRemaining.hours} 
-            label="Hours" 
-            isLoading={isLoading}
-            allZero={allZero}
-          />
-          <span className="text-2xl sm:text-3xl font-bold text-muted-foreground mb-6">:</span>
-          <CountdownDigit 
-            value={timeRemaining.minutes} 
-            label="Minutes" 
-            isLoading={isLoading}
-            allZero={allZero}
-          />
-          <span className="text-2xl sm:text-3xl font-bold text-muted-foreground mb-6">:</span>
-          <CountdownDigit 
-            value={timeRemaining.seconds} 
-            label="Seconds" 
-            isLoading={isLoading}
-            allZero={allZero}
-          />
-        </div>
-      </CardContent>
+    <Card className="bg-countdown-bg text-countdown-foreground border-0 rounded-2xl p-6">
+      <h3 className="text-lg font-semibold mb-4 opacity-90">Moving Countdown</h3>
+      <div className="grid grid-cols-4 gap-4">
+        <CountdownDigit 
+          value={timeRemaining.days} 
+          label="Days" 
+          isLoading={isLoading}
+          allZero={allZero}
+        />
+        <CountdownDigit 
+          value={timeRemaining.hours} 
+          label="Hours" 
+          isLoading={isLoading}
+          allZero={allZero}
+        />
+        <CountdownDigit 
+          value={timeRemaining.minutes} 
+          label="Minutes" 
+          isLoading={isLoading}
+          allZero={allZero}
+        />
+        <CountdownDigit 
+          value={timeRemaining.seconds} 
+          label="Seconds" 
+          isLoading={isLoading}
+          allZero={allZero}
+        />
+      </div>
     </Card>
   )
 }

@@ -1,4 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardTitle } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
 interface ProgressOverviewProps {
   completedCount: number
@@ -10,24 +11,22 @@ export function ProgressOverview({ completedCount, totalCount, className }: Prog
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
   return (
-    <Card className={className}>
-      <CardHeader className="pb-3 sm:pb-6">
-        <CardTitle className="text-lg sm:text-xl">Task Progress</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
-          {completedCount} of {totalCount} tasks completed
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="w-full bg-secondary rounded-full h-3 sm:h-4 mb-3 sm:mb-4">
-          <div
-            className="bg-primary h-3 sm:h-4 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          {Math.round(progress)}% complete
-        </p>
-      </CardContent>
+    <Card className={cn("p-6 transition-all", className)}>
+      <div className="flex items-center justify-between mb-4">
+        <CardTitle className="text-lg font-semibold">Task Progress</CardTitle>
+        <span className="text-sm font-semibold text-progress-color bg-progress-color/10 px-3 py-1 rounded-full">
+          {completedCount} of {totalCount} completed
+        </span>
+      </div>
+      <div className="relative h-3 bg-secondary rounded-full overflow-hidden mb-2">
+        <div
+          className="absolute inset-y-0 left-0 bg-progress-color rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {Math.round(progress)}% complete - keep going! 🎉
+      </p>
     </Card>
   )
 }

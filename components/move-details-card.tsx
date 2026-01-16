@@ -86,34 +86,33 @@ export function MoveDetailsCard({ moveDetails, isLoading = false, onEdit }: Move
     : "Not set"
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
+    <Card className="mb-6 overflow-hidden">
+      <div className="bg-slate-50 p-6 border-b-2 border-border">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Move Details
-          </CardTitle>
-          <Button variant="ghost" size="icon" onClick={onEdit}>
-            <Edit className="h-4 w-4" />
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Move Details</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onEdit} className="p-2 hover:bg-white rounded-lg">
+            <Edit className="w-5 h-5 text-foreground/70" />
           </Button>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Moving From</p>
-            <p className="text-lg font-semibold">{moveDetails.fromLocation}</p>
+            <p className="text-sm font-semibold text-muted-foreground mb-1">Moving From</p>
+            <p className="text-2xl font-bold">{moveDetails.fromLocation}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Moving To</p>
-            <p className="text-lg font-semibold">{moveDetails.toLocation}</p>
+            <p className="text-sm font-semibold text-muted-foreground mb-1">Moving To</p>
+            <p className="text-2xl font-bold">{moveDetails.toLocation}</p>
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Move Date
-            </p>
-            <p className="text-lg font-semibold">{moveDate}</p>
+          <div className="col-span-1 md:col-span-2">
+            <p className="text-sm font-semibold text-muted-foreground mb-1">Move Date</p>
+            <p className="text-2xl font-bold">{moveDate}</p>
           </div>
         </div>
       </CardContent>
