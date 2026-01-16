@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
-import { Plus, DollarSign } from "lucide-react"
-import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense } from "@/app/lib/storage"
-import { Task, Expense } from "@/app/lib/types"
+import { Plus, DollarSign, Calendar } from "lucide-react"
+import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense, addTimelineEvent } from "@/app/lib/storage"
+import { Task, Expense, TimelineEvent } from "@/app/lib/types"
 import { TaskForm } from "@/components/task-form"
 import { ExpenseForm } from "@/components/expense-form"
+import { TimelineEventForm } from "@/components/timeline-event-form"
 import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
@@ -26,6 +27,7 @@ export default function Home() {
   const [showMoveDetailsForm, setShowMoveDetailsForm] = useState(false)
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [showExpenseForm, setShowExpenseForm] = useState(false)
+  const [showEventForm, setShowEventForm] = useState(false)
 
   useEffect(() => {
     // Load move details from storage
@@ -90,6 +92,11 @@ export default function Home() {
     setShowExpenseForm(false)
   }
 
+  const handleSaveEvent = (eventData: Omit<TimelineEvent, "id">) => {
+    addTimelineEvent(eventData)
+    setShowEventForm(false)
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Welcome Banner */}
@@ -152,7 +159,7 @@ export default function Home() {
       {/* Quick Actions */}
       <Card className="p-6">
         <CardTitle className="text-xl font-bold mb-4">Quick Actions</CardTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             onClick={() => setShowTaskForm(true)}
             className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
@@ -171,6 +178,15 @@ export default function Home() {
             </div>
             <span className="font-semibold">Add Expense</span>
           </button>
+          <button
+            onClick={() => setShowEventForm(true)}
+            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+          >
+            <div className="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-semibold">Add Event</span>
+          </button>
         </div>
         <p className="text-center text-sm text-muted-foreground mt-4">
           Inventory and Budget coming soon
@@ -187,6 +203,12 @@ export default function Home() {
         open={showExpenseForm}
         onOpenChange={setShowExpenseForm}
         onSave={handleSaveExpense}
+      />
+
+      <TimelineEventForm
+        open={showEventForm}
+        onOpenChange={setShowEventForm}
+        onSave={handleSaveEvent}
       />
     </div>
   )
