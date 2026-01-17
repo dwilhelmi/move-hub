@@ -38,6 +38,8 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
     box: "",
     value: undefined,
     notes: "",
+    sold: false,
+    soldAmount: undefined,
   })
 
   useEffect(() => {
@@ -49,6 +51,8 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
         box: item.box || "",
         value: item.value,
         notes: item.notes || "",
+        sold: item.sold || false,
+        soldAmount: item.soldAmount,
       })
     } else {
       setFormData({
@@ -58,6 +62,8 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
         box: "",
         value: undefined,
         notes: "",
+        sold: false,
+        soldAmount: undefined,
       })
     }
   }, [item, open])
@@ -72,6 +78,8 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
       box: formData.box?.trim() || undefined,
       value: formData.value || undefined,
       notes: formData.notes?.trim() || undefined,
+      sold: formData.disposition === "sell" ? formData.sold : undefined,
+      soldAmount: formData.disposition === "sell" && formData.sold ? formData.soldAmount : undefined,
     }
 
     if (item) {
@@ -177,6 +185,45 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
                 />
               </div>
             </div>
+
+            {formData.disposition === "sell" && (
+              <div className="p-4 bg-green-50 rounded-lg space-y-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="sold"
+                    checked={formData.sold || false}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sold: e.target.checked })
+                    }
+                    className="w-4 h-4 rounded border-slate-300"
+                  />
+                  <Label htmlFor="sold" className="text-green-700 font-medium cursor-pointer">
+                    Item has been sold
+                  </Label>
+                </div>
+
+                {formData.sold && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="soldAmount">Actual Sale Amount ($)</Label>
+                    <Input
+                      id="soldAmount"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={formData.soldAmount || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          soldAmount: e.target.value ? parseInt(e.target.value) : undefined,
+                        })
+                      }
+                      placeholder={formData.value ? `Estimated: ${formData.value}` : "Enter sale amount"}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="grid gap-2">
               <Label htmlFor="notes">Notes</Label>

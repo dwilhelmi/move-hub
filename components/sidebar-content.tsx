@@ -18,7 +18,7 @@ const navigation = [
   { name: "House Prep", href: "/house-prep", icon: Hammer, active: true },
   { name: "Timeline", href: "/timeline", icon: Calendar, active: true },
   { name: "Inventory", href: "/inventory", icon: Package, active: true },
-  { name: "Budget", href: "/budget", icon: DollarSign, active: false },
+  { name: "Budget", href: "/budget", icon: DollarSign, active: true },
 ]
 
 interface SidebarContentProps {

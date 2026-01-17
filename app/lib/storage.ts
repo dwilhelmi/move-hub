@@ -1,6 +1,6 @@
 "use client"
 
-import { Task, Expense, MoveDetails, TimelineEvent, InventoryItem } from "./types"
+import { Task, Expense, MoveDetails, TimelineEvent, InventoryItem, Budget } from "./types"
 
 const STORAGE_KEYS = {
   TASKS: "move-hub-house-prep-tasks",
@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   MOVE_DETAILS: "move-hub-move-details",
   TIMELINE_EVENTS: "move-hub-timeline-events",
   INVENTORY: "move-hub-inventory",
+  BUDGET: "move-hub-budget",
 } as const
 
 // Task storage functions
@@ -288,6 +289,29 @@ export function deleteInventoryItem(id: string): boolean {
 
   saveInventoryItems(filtered)
   return true
+}
+
+// Budget storage functions
+export function getBudget(): Budget | null {
+  if (typeof window === "undefined") return null
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.BUDGET)
+    return stored ? JSON.parse(stored) : null
+  } catch (error) {
+    console.error("Error reading budget from localStorage:", error)
+    return null
+  }
+}
+
+export function saveBudget(budget: Budget): void {
+  if (typeof window === "undefined") return
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.BUDGET, JSON.stringify(budget))
+  } catch (error) {
+    console.error("Error saving budget to localStorage:", error)
+  }
 }
 
 // Logout function - clears all localStorage data

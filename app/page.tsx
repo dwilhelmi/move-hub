@@ -204,9 +204,6 @@ export default function Home() {
             <span className="font-semibold">Add Item</span>
           </button>
         </div>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Budget coming soon
-        </p>
       </Card>
 
       <TaskForm

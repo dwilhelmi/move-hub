@@ -51,4 +51,11 @@ export interface InventoryItem {
   box?: string
   value?: number
   notes?: string
+  sold?: boolean
+  soldAmount?: number
+}
+
+export interface Budget {
+  totalBudget: number
+  categoryBudgets?: Partial<Record<ExpenseCategory, number>>
 }
