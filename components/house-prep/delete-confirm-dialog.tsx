@@ -12,9 +12,16 @@ import {
 
 interface DeleteConfirmDialogProps {
   open: boolean
-  type: "task" | "expense" | "event"
+  type: "task" | "expense" | "event" | "item"
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
+}
+
+const typeLabels: Record<DeleteConfirmDialogProps["type"], string> = {
+  task: "Task",
+  expense: "Expense",
+  event: "Event",
+  item: "Item",
 }
 
 export function DeleteConfirmDialog({
@@ -23,7 +30,7 @@ export function DeleteConfirmDialog({
   onOpenChange,
   onConfirm,
 }: DeleteConfirmDialogProps) {
-  const typeLabel = type === "task" ? "Task" : type === "expense" ? "Expense" : "Event"
+  const typeLabel = typeLabels[type]
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

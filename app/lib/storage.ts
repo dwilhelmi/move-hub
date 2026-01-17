@@ -1,12 +1,13 @@
 "use client"
 
-import { Task, Expense, MoveDetails, TimelineEvent } from "./types"
+import { Task, Expense, MoveDetails, TimelineEvent, InventoryItem } from "./types"
 
 const STORAGE_KEYS = {
   TASKS: "move-hub-house-prep-tasks",
   EXPENSES: "move-hub-house-prep-expenses",
   MOVE_DETAILS: "move-hub-move-details",
   TIMELINE_EVENTS: "move-hub-timeline-events",
+  INVENTORY: "move-hub-inventory",
 } as const
 
 // Task storage functions
@@ -226,6 +227,66 @@ export function deleteTimelineEvent(id: string): boolean {
   if (filtered.length === events.length) return false
   
   saveTimelineEvents(filtered)
+  return true
+}
+
+// Inventory storage functions
+export function getInventoryItems(): InventoryItem[] {
+  if (typeof window === "undefined") return []
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.INVENTORY)
+    return stored ? JSON.parse(stored) : []
+  } catch (error) {
+    console.error("Error reading inventory from localStorage:", error)
+    return []
+  }
+}
+
+export function saveInventoryItems(items: InventoryItem[]): void {
+  if (typeof window === "undefined") return
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items))
+  } catch (error) {
+    console.error("Error saving inventory to localStorage:", error)
+  }
+}
+
+export function addInventoryItem(item: Omit<InventoryItem, "id">): InventoryItem {
+  const items = getInventoryItems()
+  const newItem: InventoryItem = {
+    ...item,
+    id: crypto.randomUUID(),
+  }
+  saveInventoryItems([...items, newItem])
+  return newItem
+}
+
+export function updateInventoryItem(id: string, updates: Partial<InventoryItem>): InventoryItem | null {
+  const items = getInventoryItems()
+  const index = items.findIndex((item) => item.id === id)
+
+  if (index === -1) return null
+
+  const updatedItem = {
+    ...items[index],
+    ...updates,
+    id,
+  }
+
+  items[index] = updatedItem
+  saveInventoryItems(items)
+  return updatedItem
+}
+
+export function deleteInventoryItem(id: string): boolean {
+  const items = getInventoryItems()
+  const filtered = items.filter((item) => item.id !== id)
+
+  if (filtered.length === items.length) return false
+
+  saveInventoryItems(filtered)
   return true
 }
 

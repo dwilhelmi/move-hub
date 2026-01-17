@@ -39,3 +39,16 @@ export interface TimelineEvent {
   description?: string
   date: string // ISO date string
 }
+
+export type InventoryRoom = "kitchen" | "living" | "bedroom" | "bathroom" | "garage" | "office" | "other"
+export type InventoryDisposition = "keep" | "sell" | "donate" | "trash"
+
+export interface InventoryItem {
+  id: string
+  name: string
+  room: InventoryRoom
+  disposition: InventoryDisposition
+  box?: string
+  value?: number
+  notes?: string
+}

@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
-import { Plus, DollarSign, Calendar } from "lucide-react"
-import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense, addTimelineEvent } from "@/app/lib/storage"
-import { Task, Expense, TimelineEvent } from "@/app/lib/types"
+import { Plus, DollarSign, Calendar, Package } from "lucide-react"
+import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense, addTimelineEvent, getInventoryItems, addInventoryItem } from "@/app/lib/storage"
+import { Task, Expense, TimelineEvent, InventoryItem } from "@/app/lib/types"
 import { TaskForm } from "@/components/task-form"
 import { ExpenseForm } from "@/components/expense-form"
 import { TimelineEventForm } from "@/components/timeline-event-form"
+import { InventoryItemForm } from "@/components/inventory-item-form"
 import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
@@ -28,6 +29,7 @@ export default function Home() {
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [showExpenseForm, setShowExpenseForm] = useState(false)
   const [showEventForm, setShowEventForm] = useState(false)
+  const [showInventoryForm, setShowInventoryForm] = useState(false)
 
   useEffect(() => {
     // Load move details from storage
@@ -97,6 +99,11 @@ export default function Home() {
     setShowEventForm(false)
   }
 
+  const handleSaveInventoryItem = (itemData: Omit<InventoryItem, "id">) => {
+    addInventoryItem(itemData)
+    setShowInventoryForm(false)
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Welcome Banner */}
@@ -159,7 +166,7 @@ export default function Home() {
       {/* Quick Actions */}
       <Card className="p-6">
         <CardTitle className="text-xl font-bold mb-4">Quick Actions</CardTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
             onClick={() => setShowTaskForm(true)}
             className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
@@ -187,9 +194,18 @@ export default function Home() {
             </div>
             <span className="font-semibold">Add Event</span>
           </button>
+          <button
+            onClick={() => setShowInventoryForm(true)}
+            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+          >
+            <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+              <Package className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-semibold">Add Item</span>
+          </button>
         </div>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          Inventory and Budget coming soon
+          Budget coming soon
         </p>
       </Card>
 
@@ -209,6 +225,12 @@ export default function Home() {
         open={showEventForm}
         onOpenChange={setShowEventForm}
         onSave={handleSaveEvent}
+      />
+
+      <InventoryItemForm
+        open={showInventoryForm}
+        onOpenChange={setShowInventoryForm}
+        onSave={handleSaveInventoryItem}
       />
     </div>
   )
