@@ -1,64 +1,74 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
-import { InventoryItem } from "@/app/lib/types"
+import { useHub } from "@/components/providers/hub-provider"
+import { HubSetup } from "@/components/hub-setup"
 import {
   getInventoryItems,
-  addInventoryItem,
-  updateInventoryItem,
-  deleteInventoryItem,
-} from "@/app/lib/storage"
+  addInventoryItem as dbAddInventoryItem,
+  updateInventoryItem as dbUpdateInventoryItem,
+  deleteInventoryItem as dbDeleteInventoryItem,
+  InventoryItem,
+} from "@/lib/supabase/database"
 import { InventoryStats } from "@/components/inventory/inventory-stats"
 import { InventoryList } from "@/components/inventory/inventory-list"
 import { InventoryItemForm } from "@/components/inventory-item-form"
 import { DeleteConfirmDialog } from "@/components/house-prep/delete-confirm-dialog"
 
 export default function InventoryPage() {
+  const { hub, isLoading: isHubLoading } = useHub()
   const [items, setItems] = useState<InventoryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
+  const loadData = useCallback(async () => {
+    if (!hub) return
+
+    setIsLoading(true)
+    const storedItems = await getInventoryItems(hub.id)
+    setItems(storedItems)
+    setIsLoading(false)
+  }, [hub])
+
   useEffect(() => {
-    const loadData = () => {
-      const storedItems = getInventoryItems()
-      setItems(storedItems)
-      setIsLoading(false)
-    }
-
     loadData()
+  }, [loadData])
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "move-hub-inventory") {
-        loadData()
-      }
-    }
+  const handleSaveItem = async (itemData: Omit<InventoryItem, "id"> | InventoryItem) => {
+    if (!hub) return
 
-    window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
-  }, [])
-
-  const handleSaveItem = (itemData: Omit<InventoryItem, "id"> | InventoryItem) => {
     if ("id" in itemData && itemData.id) {
-      const updated = updateInventoryItem(itemData.id, itemData)
-      if (updated) {
-        setItems(items.map((i) => (i.id === itemData.id ? updated : i)))
-      }
+      await dbUpdateInventoryItem(itemData.id, itemData)
+      setItems(items.map((i) => (i.id === itemData.id ? { ...i, ...itemData } : i)))
     } else {
-      const newItem = addInventoryItem(itemData as Omit<InventoryItem, "id">)
-      setItems([...items, newItem])
+      const newItem = await dbAddInventoryItem(hub.id, itemData as Omit<InventoryItem, "id">)
+      if (newItem) {
+        setItems([...items, newItem])
+      }
     }
     setEditingItem(null)
     setShowAddForm(false)
   }
 
-  const handleDeleteItem = (id: string) => {
-    if (deleteInventoryItem(id)) {
-      setItems(items.filter((i) => i.id !== id))
-    }
+  const handleDeleteItem = async (id: string) => {
+    await dbDeleteInventoryItem(id)
+    setItems(items.filter((i) => i.id !== id))
     setDeleteConfirm(null)
+  }
+
+  if (isHubLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!hub) {
+    return <HubSetup />
   }
 
   if (isLoading) {

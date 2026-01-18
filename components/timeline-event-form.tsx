@@ -34,7 +34,7 @@ export function TimelineEventForm({ event, open, onOpenChange, onSave }: Timelin
       const eventDate = event.date ? new Date(event.date).toISOString().split("T")[0] : ""
       setFormData({
         title: event.title || "",
-        description: event.description || "",
+        description: event.notes || event.description || "",
         date: eventDate,
       })
     } else {
@@ -58,8 +58,9 @@ export function TimelineEventForm({ event, open, onOpenChange, onSave }: Timelin
 
     const eventData = {
       title: formData.title.trim(),
-      description: formData.description.trim() || undefined,
       date: dateTime.toISOString(),
+      type: event?.type || "event",
+      notes: formData.description.trim() || undefined,
     }
 
     if (event?.id) {

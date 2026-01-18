@@ -17,8 +17,8 @@ export function ExpenseItem({ expense, onEdit, onDelete }: ExpenseItemProps) {
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
           <p className="font-medium text-sm truncate">{expense.description}</p>
-          {expense.vendor && (
-            <span className="text-xs text-muted-foreground shrink-0">• {expense.vendor}</span>
+          {expense.notes && (
+            <span className="text-xs text-muted-foreground shrink-0">• {expense.notes}</span>
           )}
         </div>
         <p className="text-xs text-muted-foreground mt-1">{formatDate(expense.date)}</p>

@@ -1,11 +1,25 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
 import { Plus, DollarSign, Calendar, Package } from "lucide-react"
-import { getTasks, getMoveDetails, saveMoveDetails, addTask, addExpense, addTimelineEvent, getInventoryItems, addInventoryItem } from "@/app/lib/storage"
-import { Task, Expense, TimelineEvent, InventoryItem } from "@/app/lib/types"
+import { useHub } from "@/components/providers/hub-provider"
+import { HubSetup } from "@/components/hub-setup"
+import {
+  getMoveDetails,
+  saveMoveDetails,
+  getTasks,
+  addTask as dbAddTask,
+  addExpense as dbAddExpense,
+  addTimelineEvent as dbAddTimelineEvent,
+  addInventoryItem as dbAddInventoryItem,
+  MoveDetails,
+  Task,
+  Expense,
+  TimelineEvent,
+  InventoryItem,
+} from "@/lib/supabase/database"
 import { TaskForm } from "@/components/task-form"
 import { ExpenseForm } from "@/components/expense-form"
 import { TimelineEventForm } from "@/components/timeline-event-form"
@@ -14,15 +28,11 @@ import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
 import { MoveDetailsForm } from "@/components/move-details-form"
-import { MoveDetails } from "@/app/lib/types"
-
-// Module-level cache to store move details across remounts (for navigation)
-let cachedMoveDetails: MoveDetails | null = null
 
 export default function Home() {
-  // Initialize with cached value if available (from previous mount), otherwise start with null
-  const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(cachedMoveDetails)
-  const [isLoadingMoveDetails, setIsLoadingMoveDetails] = useState(cachedMoveDetails === null)
+  const { hub, isLoading: isHubLoading } = useHub()
+  const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
+  const [isLoadingMoveDetails, setIsLoadingMoveDetails] = useState(true)
   const [tasksCompleted, setTasksCompleted] = useState(0)
   const [totalTasks, setTotalTasks] = useState(0)
   const [showMoveDetailsForm, setShowMoveDetailsForm] = useState(false)
@@ -31,77 +41,73 @@ export default function Home() {
   const [showEventForm, setShowEventForm] = useState(false)
   const [showInventoryForm, setShowInventoryForm] = useState(false)
 
-  useEffect(() => {
-    // Load move details from storage
-    const details = getMoveDetails()
+  const loadData = useCallback(async () => {
+    if (!hub) return
+
+    setIsLoadingMoveDetails(true)
+    const [details, tasks] = await Promise.all([
+      getMoveDetails(hub.id),
+      getTasks(hub.id),
+    ])
+
     setMoveDetails(details)
-    cachedMoveDetails = details
-    setIsLoadingMoveDetails(false)
-
-    // Listen for storage changes
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "move-hub-move-details") {
-        const updated = getMoveDetails()
-        setMoveDetails(updated)
-        cachedMoveDetails = updated
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
-  }, [])
-
-  useEffect(() => {
-    const loadTaskStats = () => {
-      const tasks = getTasks()
-      const completed = tasks.filter((task) => task.status === "completed").length
-      setTasksCompleted(completed)
-      setTotalTasks(tasks.length)
-    }
-
-    loadTaskStats()
-
-    // Listen for storage changes to update in real-time
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "move-hub-house-prep-tasks") {
-        loadTaskStats()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-    
-    // Also check periodically for changes (for same-tab updates)
-    const interval = setInterval(loadTaskStats, 1000)
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      clearInterval(interval)
-    }
-  }, [])
-
-  const handleSaveTask = (taskData: Omit<Task, "id">) => {
-    addTask(taskData)
-    // Refresh task stats
-    const tasks = getTasks()
     const completed = tasks.filter((task) => task.status === "completed").length
     setTasksCompleted(completed)
     setTotalTasks(tasks.length)
-    setShowTaskForm(false)
+    setIsLoadingMoveDetails(false)
+  }, [hub])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const handleSaveMoveDetails = async (details: MoveDetails) => {
+    if (!hub) return
+    await saveMoveDetails(hub.id, details)
+    setMoveDetails(details)
   }
 
-  const handleSaveExpense = (expenseData: Omit<Expense, "id">) => {
-    addExpense(expenseData)
+  const handleSaveTask = async (taskData: Omit<Task, "id">) => {
+    if (!hub) return
+    await dbAddTask(hub.id, taskData)
+    setShowTaskForm(false)
+    // Refresh task count
+    const tasks = await getTasks(hub.id)
+    const completed = tasks.filter((task) => task.status === "completed").length
+    setTasksCompleted(completed)
+    setTotalTasks(tasks.length)
+  }
+
+  const handleSaveExpense = async (expenseData: Omit<Expense, "id">) => {
+    if (!hub) return
+    await dbAddExpense(hub.id, expenseData)
     setShowExpenseForm(false)
   }
 
-  const handleSaveEvent = (eventData: Omit<TimelineEvent, "id">) => {
-    addTimelineEvent(eventData)
+  const handleSaveEvent = async (eventData: Omit<TimelineEvent, "id">) => {
+    if (!hub) return
+    await dbAddTimelineEvent(hub.id, eventData)
     setShowEventForm(false)
   }
 
-  const handleSaveInventoryItem = (itemData: Omit<InventoryItem, "id">) => {
-    addInventoryItem(itemData)
+  const handleSaveInventoryItem = async (itemData: Omit<InventoryItem, "id">) => {
+    if (!hub) return
+    await dbAddInventoryItem(hub.id, itemData)
     setShowInventoryForm(false)
+  }
+
+  // Show loading while checking hub
+  if (isHubLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  // Show hub setup if no hub
+  if (!hub) {
+    return <HubSetup />
   }
 
   return (
@@ -111,7 +117,7 @@ export default function Home() {
         <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
         <CardHeader className="relative p-8">
           <CardTitle className="text-4xl font-bold mb-2">
-            Welcome to Move Hub
+            {hub.name}
           </CardTitle>
           <CardDescription className="text-primary-foreground/90 text-lg">
             Your complete companion for planning and executing your move
@@ -156,11 +162,7 @@ export default function Home() {
         moveDetails={moveDetails}
         open={showMoveDetailsForm}
         onOpenChange={setShowMoveDetailsForm}
-        onSave={(details) => {
-          saveMoveDetails(details)
-          setMoveDetails(details)
-          cachedMoveDetails = details
-        }}
+        onSave={handleSaveMoveDetails}
       />
 
       {/* Quick Actions */}

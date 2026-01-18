@@ -34,7 +34,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
     description: "",
     amount: 0,
     date: new Date().toISOString().split("T")[0],
-    vendor: "",
+    notes: "",
   })
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
         description: expense.description,
         amount: expense.amount,
         date: expense.date.split("T")[0],
-        vendor: expense.vendor || "",
+        notes: expense.notes || "",
       })
     } else {
       setFormData({
@@ -52,7 +52,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
         description: "",
         amount: 0,
         date: new Date().toISOString().split("T")[0],
-        vendor: "",
+        notes: "",
       })
     }
   }, [expense, open])
@@ -154,12 +154,12 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="vendor">Vendor</Label>
+                <Label htmlFor="notes">Notes</Label>
                 <Input
-                  id="vendor"
-                  value={formData.vendor}
+                  id="notes"
+                  value={formData.notes || ""}
                   onChange={(e) =>
-                    setFormData({ ...formData, vendor: e.target.value })
+                    setFormData({ ...formData, notes: e.target.value })
                   }
                   placeholder="Optional"
                 />

@@ -1,10 +1,22 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { getMoveDetails, getTasks, saveMoveDetails, getTimelineEvents, addTimelineEvent, updateTimelineEvent, deleteTimelineEvent } from "@/app/lib/storage"
-import { MoveDetails, Task, TimelineEvent as CustomTimelineEvent } from "@/app/lib/types"
+import { useHub } from "@/components/providers/hub-provider"
+import { HubSetup } from "@/components/hub-setup"
+import {
+  getMoveDetails,
+  saveMoveDetails,
+  getTasks,
+  getTimelineEvents,
+  addTimelineEvent as dbAddTimelineEvent,
+  updateTimelineEvent as dbUpdateTimelineEvent,
+  deleteTimelineEvent as dbDeleteTimelineEvent,
+  MoveDetails,
+  Task,
+  TimelineEvent,
+} from "@/lib/supabase/database"
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { TimelineEventForm } from "@/components/timeline-event-form"
@@ -14,38 +26,36 @@ import { TimelineList } from "@/components/timeline/timeline-list"
 import { EditStartDateDialog } from "@/components/timeline/edit-start-date-dialog"
 
 export default function TimelinePage() {
+  const { hub, isLoading: isHubLoading } = useHub()
   const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
-  const [customEvents, setCustomEvents] = useState<CustomTimelineEvent[]>([])
+  const [customEvents, setCustomEvents] = useState<TimelineEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [editingEvent, setEditingEvent] = useState<CustomTimelineEvent | null>(null)
+  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [editingStartDate, setEditingStartDate] = useState(false)
   const [startDateValue, setStartDateValue] = useState("")
 
+  const loadData = useCallback(async () => {
+    if (!hub) return
+
+    setIsLoading(true)
+    const [details, taskList, events] = await Promise.all([
+      getMoveDetails(hub.id),
+      getTasks(hub.id),
+      getTimelineEvents(hub.id),
+    ])
+
+    setMoveDetails(details)
+    setTasks(taskList)
+    setCustomEvents(events)
+    setIsLoading(false)
+  }, [hub])
+
   useEffect(() => {
-    const loadData = () => {
-      const details = getMoveDetails()
-      const taskList = getTasks()
-      const events = getTimelineEvents()
-      setMoveDetails(details)
-      setTasks(taskList)
-      setCustomEvents(events)
-      setIsLoading(false)
-    }
-
     loadData()
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "move-hub-move-details" || e.key === "move-hub-house-prep-tasks" || e.key === "move-hub-timeline-events") {
-        loadData()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
-  }, [])
+  }, [loadData])
 
   // Initialize start date value for editing
   useEffect(() => {
@@ -61,27 +71,16 @@ export default function TimelinePage() {
     const events: DisplayTimelineEvent[] = []
 
     // Add start date event
-    let startDate = moveDetails.createdDate
+    const startDate = moveDetails.createdDate
       ? new Date(moveDetails.createdDate)
       : new Date()
-
-    // If no createdDate exists, save today's date
-    if (!moveDetails.createdDate) {
-      const updatedDetails = {
-        ...moveDetails,
-        createdDate: new Date().toISOString()
-      }
-      saveMoveDetails(updatedDetails)
-      setMoveDetails(updatedDetails)
-      startDate = new Date()
-    }
 
     events.push({
       id: "start",
       date: startDate,
       type: "start",
       title: "Move Planning Started",
-      description: `Moving from ${moveDetails.fromLocation} to ${moveDetails.toLocation}`,
+      description: `Moving from ${moveDetails.currentAddress || "current location"} to ${moveDetails.newAddress || "new location"}`,
     })
 
     // Add move date event
@@ -90,7 +89,7 @@ export default function TimelinePage() {
       date: new Date(moveDetails.moveDate),
       type: "move",
       title: "Move Date",
-      description: `Final move to ${moveDetails.toLocation}`,
+      description: `Final move to ${moveDetails.newAddress || "new location"}`,
     })
 
     // Add tasks with due dates
@@ -103,7 +102,11 @@ export default function TimelinePage() {
           type: "task",
           title: task.title,
           description: task.category,
-          task,
+          task: {
+            ...task,
+            status: task.status as "pending" | "in-progress" | "completed",
+            priority: task.priority as "low" | "medium" | "high",
+          },
           isCompleted: task.status === "completed",
         })
       })
@@ -115,30 +118,36 @@ export default function TimelinePage() {
         date: new Date(customEvent.date),
         type: "custom",
         title: customEvent.title,
-        description: customEvent.description,
-        customEvent,
+        description: customEvent.notes,
+        customEvent: {
+          ...customEvent,
+          description: customEvent.notes,
+        },
       })
     })
 
     return events.sort((a, b) => a.date.getTime() - b.date.getTime())
   }, [moveDetails, tasks, customEvents])
 
-  const handleSaveEvent = (eventData: Omit<CustomTimelineEvent, "id"> | CustomTimelineEvent) => {
+  const handleSaveEvent = async (eventData: Omit<TimelineEvent, "id"> | TimelineEvent) => {
+    if (!hub) return
+
     if ("id" in eventData && eventData.id) {
-      updateTimelineEvent(eventData.id, eventData)
-      setCustomEvents(customEvents.map((e) => (e.id === eventData.id ? eventData : e)))
+      await dbUpdateTimelineEvent(eventData.id, eventData)
+      setCustomEvents(customEvents.map((e) => (e.id === eventData.id ? { ...e, ...eventData } : e)))
     } else {
-      const newEvent = addTimelineEvent(eventData as Omit<CustomTimelineEvent, "id">)
-      setCustomEvents([...customEvents, newEvent])
+      const newEvent = await dbAddTimelineEvent(hub.id, eventData as Omit<TimelineEvent, "id">)
+      if (newEvent) {
+        setCustomEvents([...customEvents, newEvent])
+      }
     }
     setEditingEvent(null)
     setShowAddForm(false)
   }
 
-  const handleDeleteEvent = (id: string) => {
-    if (deleteTimelineEvent(id)) {
-      setCustomEvents(customEvents.filter((e) => e.id !== id))
-    }
+  const handleDeleteEvent = async (id: string) => {
+    await dbDeleteTimelineEvent(id)
+    setCustomEvents(customEvents.filter((e) => e.id !== id))
     setDeleteConfirm(null)
   }
 
@@ -148,18 +157,30 @@ export default function TimelinePage() {
     setEditingStartDate(true)
   }
 
-  const handleSaveStartDate = () => {
-    if (moveDetails && startDateValue) {
-      const dateTime = new Date(startDateValue)
-      dateTime.setHours(12, 0, 0, 0)
-      const updatedDetails = {
-        ...moveDetails,
-        createdDate: dateTime.toISOString(),
-      }
-      saveMoveDetails(updatedDetails)
-      setMoveDetails(updatedDetails)
-      setEditingStartDate(false)
+  const handleSaveStartDate = async () => {
+    if (!hub || !moveDetails || !startDateValue) return
+
+    const dateTime = new Date(startDateValue)
+    dateTime.setHours(12, 0, 0, 0)
+    const updatedDetails = {
+      ...moveDetails,
+      createdDate: dateTime.toISOString(),
     }
+    await saveMoveDetails(hub.id, updatedDetails)
+    setMoveDetails(updatedDetails)
+    setEditingStartDate(false)
+  }
+
+  if (isHubLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!hub) {
+    return <HubSetup />
   }
 
   if (isLoading) {

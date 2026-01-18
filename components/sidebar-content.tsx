@@ -3,22 +3,23 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { logout } from "@/app/lib/storage"
+import { useAuth } from "@/components/providers/auth-provider"
 import {
   Home,
   Hammer,
   Calendar,
   Package,
   DollarSign,
+  Settings,
   LogOut,
 } from "lucide-react"
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: Home, active: true },
-  { name: "House Prep", href: "/house-prep", icon: Hammer, active: true },
-  { name: "Timeline", href: "/timeline", icon: Calendar, active: true },
-  { name: "Inventory", href: "/inventory", icon: Package, active: true },
-  { name: "Budget", href: "/budget", icon: DollarSign, active: true },
+  { name: "Dashboard", href: "/", icon: Home },
+  { name: "House Prep", href: "/house-prep", icon: Hammer },
+  { name: "Timeline", href: "/timeline", icon: Calendar },
+  { name: "Inventory", href: "/inventory", icon: Package },
+  { name: "Budget", href: "/budget", icon: DollarSign },
 ]
 
 interface SidebarContentProps {
@@ -28,14 +29,12 @@ interface SidebarContentProps {
 export function SidebarContent({ onLinkClick }: SidebarContentProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { signOut } = useAuth()
 
-  const handleLogout = () => {
-    logout()
-    // Close mobile sidebar if open
+  const handleLogout = async () => {
     onLinkClick?.()
-    // Refresh the page to show empty state
-    router.push("/")
-    router.refresh()
+    await signOut()
+    router.push("/login")
   }
 
   return (
@@ -51,11 +50,9 @@ export function SidebarContent({ onLinkClick }: SidebarContentProps) {
               onClick={onLinkClick}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                isActive && item.active
+                isActive
                   ? "bg-primary text-primary-foreground"
-                  : item.active
-                  ? "text-foreground hover:bg-accent hover:text-accent-foreground"
-                  : "cursor-not-allowed text-muted-foreground opacity-50"
+                  : "text-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
               <Icon className="h-5 w-5" />
@@ -64,7 +61,20 @@ export function SidebarContent({ onLinkClick }: SidebarContentProps) {
           )
         })}
       </nav>
-      <div className="border-t px-3 py-4">
+      <div className="border-t px-3 py-4 space-y-1">
+        <Link
+          href="/settings"
+          onClick={onLinkClick}
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/settings"
+              ? "bg-primary text-primary-foreground"
+              : "text-foreground hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          <Settings className="h-5 w-5" />
+          Settings
+        </Link>
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"

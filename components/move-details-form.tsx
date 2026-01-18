@@ -28,8 +28,8 @@ export function MoveDetailsForm({
   onSave,
 }: MoveDetailsFormProps) {
   const [formData, setFormData] = useState<Omit<MoveDetails, "moveDate"> & { moveDate: string }>({
-    fromLocation: "",
-    toLocation: "",
+    currentAddress: "",
+    newAddress: "",
     moveDate: "",
   })
 
@@ -40,14 +40,14 @@ export function MoveDetailsForm({
         ? new Date(moveDetails.moveDate).toISOString().slice(0, 16)
         : ""
       setFormData({
-        fromLocation: moveDetails.fromLocation || "",
-        toLocation: moveDetails.toLocation || "",
+        currentAddress: moveDetails.currentAddress || "",
+        newAddress: moveDetails.newAddress || "",
         moveDate: dateTimeLocal,
       })
     } else {
       setFormData({
-        fromLocation: "",
-        toLocation: "",
+        currentAddress: "",
+        newAddress: "",
         moveDate: "",
       })
     }
@@ -61,8 +61,8 @@ export function MoveDetailsForm({
       : ""
 
     const details: MoveDetails = {
-      fromLocation: formData.fromLocation.trim(),
-      toLocation: formData.toLocation.trim(),
+      currentAddress: formData.currentAddress?.trim(),
+      newAddress: formData.newAddress?.trim(),
       moveDate: moveDateISO,
       // Preserve existing createdDate when editing, or set to now for new entries
       createdDate: moveDetails?.createdDate || new Date().toISOString(),
@@ -88,24 +88,24 @@ export function MoveDetailsForm({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="fromLocation">Moving From *</Label>
+              <Label htmlFor="currentAddress">Moving From *</Label>
               <Input
-                id="fromLocation"
-                value={formData.fromLocation}
+                id="currentAddress"
+                value={formData.currentAddress}
                 onChange={(e) =>
-                  setFormData({ ...formData, fromLocation: e.target.value })
+                  setFormData({ ...formData, currentAddress: e.target.value })
                 }
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="toLocation">Moving To *</Label>
+              <Label htmlFor="newAddress">Moving To *</Label>
               <Input
-                id="toLocation"
-                value={formData.toLocation}
+                id="newAddress"
+                value={formData.newAddress}
                 onChange={(e) =>
-                  setFormData({ ...formData, toLocation: e.target.value })
+                  setFormData({ ...formData, newAddress: e.target.value })
                 }
                 required
               />

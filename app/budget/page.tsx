@@ -1,60 +1,71 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
-import { Budget, Expense, InventoryItem } from "@/app/lib/types"
+import { useHub } from "@/components/providers/hub-provider"
+import { HubSetup } from "@/components/hub-setup"
 import {
   getBudget,
   saveBudget,
   getExpenses,
   getInventoryItems,
-} from "@/app/lib/storage"
+  Budget,
+  Expense,
+  InventoryItem,
+} from "@/lib/supabase/database"
 import { BudgetOverview } from "@/components/budget/budget-overview"
 import { BudgetCategoryBreakdown } from "@/components/budget/budget-category-breakdown"
 import { SellingIncome } from "@/components/budget/selling-income"
 import { BudgetSettingsForm } from "@/components/budget/budget-settings-form"
 
 export default function BudgetPage() {
+  const { hub, isLoading: isHubLoading } = useHub()
   const [budget, setBudget] = useState<Budget | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showSettingsForm, setShowSettingsForm] = useState(false)
 
+  const loadData = useCallback(async () => {
+    if (!hub) return
+
+    setIsLoading(true)
+    const [storedBudget, storedExpenses, storedItems] = await Promise.all([
+      getBudget(hub.id),
+      getExpenses(hub.id),
+      getInventoryItems(hub.id),
+    ])
+
+    setBudget(storedBudget)
+    setExpenses(storedExpenses)
+    setInventoryItems(storedItems)
+    setIsLoading(false)
+  }, [hub])
+
   useEffect(() => {
-    const loadData = () => {
-      const storedBudget = getBudget()
-      const storedExpenses = getExpenses()
-      const storedItems = getInventoryItems()
-      setBudget(storedBudget)
-      setExpenses(storedExpenses)
-      setInventoryItems(storedItems)
-      setIsLoading(false)
-    }
-
     loadData()
+  }, [loadData])
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (
-        e.key === "move-hub-budget" ||
-        e.key === "move-hub-house-prep-expenses" ||
-        e.key === "move-hub-inventory"
-      ) {
-        loadData()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
-  }, [])
-
-  const handleSaveBudget = (newBudget: Budget) => {
-    saveBudget(newBudget)
+  const handleSaveBudget = async (newBudget: Budget) => {
+    if (!hub) return
+    await saveBudget(hub.id, newBudget)
     setBudget(newBudget)
     setShowSettingsForm(false)
   }
 
   const soldItems = inventoryItems.filter((i) => i.disposition === "sell" && i.sold)
+
+  if (isHubLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!hub) {
+    return <HubSetup />
+  }
 
   if (isLoading) {
     return (

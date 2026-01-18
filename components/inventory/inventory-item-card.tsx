@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { InventoryItem } from "@/app/lib/types"
 import { Edit, Trash2, Package, DollarSign, Box } from "lucide-react"
 import { roomLabels, dispositionLabels, dispositionColors } from "./constants"
+import { InventoryDisposition, InventoryRoom } from "@/app/lib/types"
 
 interface InventoryItemCardProps {
   item: InventoryItem
@@ -22,11 +23,11 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${dispositionColors[item.disposition]}`}>
-              {dispositionLabels[item.disposition]}
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${dispositionColors[item.disposition as InventoryDisposition] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
+              {dispositionLabels[item.disposition as InventoryDisposition] || item.disposition}
             </span>
             <span className="text-xs text-muted-foreground">
-              {roomLabels[item.room]}
+              {roomLabels[item.room as InventoryRoom] || item.room}
             </span>
             {item.box && (
               <span className="text-xs text-muted-foreground flex items-center gap-1">

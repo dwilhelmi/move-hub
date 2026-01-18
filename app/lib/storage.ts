@@ -47,25 +47,15 @@ export function addTask(task: Omit<Task, "id">): Task {
 export function updateTask(id: string, updates: Partial<Task>): Task | null {
   const tasks = getTasks()
   const index = tasks.findIndex((task) => task.id === id)
-  
+
   if (index === -1) return null
-  
+
   const updatedTask = {
     ...tasks[index],
     ...updates,
     id, // Ensure id doesn't change
   }
-  
-  // If status is being updated to completed, set completedDate
-  if (updates.status === "completed" && !updatedTask.completedDate) {
-    updatedTask.completedDate = new Date().toISOString()
-  }
-  
-  // If status is being changed from completed, clear completedDate
-  if (updates.status && updates.status !== "completed" && updatedTask.completedDate) {
-    updatedTask.completedDate = undefined
-  }
-  
+
   tasks[index] = updatedTask
   saveTasks(tasks)
   return updatedTask

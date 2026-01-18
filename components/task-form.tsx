@@ -36,7 +36,6 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
     category: "repairs",
     status: "pending",
     priority: "medium",
-    notes: "",
   })
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
         status: task.status,
         priority: task.priority,
         dueDate: task.dueDate,
-        notes: task.notes || "",
       })
     } else {
       setFormData({
@@ -57,7 +55,6 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
         category: "repairs",
         status: "pending",
         priority: "medium",
-        notes: "",
       })
     }
   }, [task, open])
@@ -187,18 +184,6 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
-                rows={3}
-                placeholder="Additional notes or reminders..."
-              />
-            </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">

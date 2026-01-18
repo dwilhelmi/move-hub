@@ -7,16 +7,24 @@ export const roomLabels: Record<InventoryRoom, string> = {
   bathroom: "Bathroom",
   garage: "Garage",
   office: "Office",
+  dining: "Dining Room",
+  basement: "Basement",
+  attic: "Attic",
+  outdoor: "Outdoor",
   other: "Other",
 }
 
 export const roomOrder: InventoryRoom[] = [
   "kitchen",
   "living",
+  "dining",
   "bedroom",
   "bathroom",
   "office",
   "garage",
+  "basement",
+  "attic",
+  "outdoor",
   "other",
 ]
 

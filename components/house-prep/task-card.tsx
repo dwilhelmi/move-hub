@@ -101,34 +101,9 @@ export function TaskCard({
                 <p className="text-sm">{task.description}</p>
               </div>
             )}
-            {task.notes && (
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  Notes
-                </p>
-                <p className="text-sm whitespace-pre-wrap">{task.notes}</p>
-              </div>
-            )}
-            {task.photos && task.photos.length > 0 && (
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-2">
-                  Photos
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {task.photos.map((photo, idx) => (
-                    <div
-                      key={idx}
-                      className="aspect-video bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground"
-                    >
-                      Photo {idx + 1}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {task.completedDate && (
+            {task.dueDate && (
               <div className="text-xs text-muted-foreground">
-                Completed: {formatDate(task.completedDate)}
+                Due: {formatDate(task.dueDate)}
               </div>
             )}
           </div>

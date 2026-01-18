@@ -104,11 +104,11 @@ export function MoveDetailsCard({ moveDetails, isLoading = false, onEdit }: Move
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p className="text-sm font-semibold text-muted-foreground mb-1">Moving From</p>
-            <p className="text-2xl font-bold">{moveDetails.fromLocation}</p>
+            <p className="text-2xl font-bold">{moveDetails.currentAddress || "Not set"}</p>
           </div>
           <div>
             <p className="text-sm font-semibold text-muted-foreground mb-1">Moving To</p>
-            <p className="text-2xl font-bold">{moveDetails.toLocation}</p>
+            <p className="text-2xl font-bold">{moveDetails.newAddress || "Not set"}</p>
           </div>
           <div className="col-span-1 md:col-span-2">
             <p className="text-sm font-semibold text-muted-foreground mb-1">Move Date</p>
