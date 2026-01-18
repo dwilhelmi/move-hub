@@ -1,15 +1,6 @@
 "use client"
 
 import { createClient } from "./client"
-import {
-  MoveDetailsRow,
-  TaskRow,
-  ExpenseRow,
-  TimelineEventRow,
-  InventoryItemRow,
-  BudgetRow,
-} from "./types"
-
 // Re-export types from the main types file for consistency
 export type {
   MoveDetails,
@@ -35,71 +26,15 @@ import type {
   Budget,
 } from "@/app/lib/types"
 
-// Helper to convert database row to app type
-function rowToMoveDetails(row: MoveDetailsRow | null): MoveDetails | null {
-  if (!row) return null
-  return {
-    currentAddress: row.current_address || undefined,
-    newAddress: row.new_address || undefined,
-    moveDate: row.move_date || undefined,
-    createdDate: row.created_date || undefined,
-  }
-}
-
-function rowToTask(row: TaskRow): Task {
-  return {
-    id: row.id,
-    title: row.title,
-    description: row.description || undefined,
-    status: row.status,
-    priority: row.priority,
-    category: row.category || undefined,
-    dueDate: row.due_date || undefined,
-  }
-}
-
-function rowToExpense(row: ExpenseRow): Expense {
-  return {
-    id: row.id,
-    description: row.description,
-    amount: row.amount,
-    category: row.category,
-    date: row.date,
-    notes: row.notes || undefined,
-  }
-}
-
-function rowToTimelineEvent(row: TimelineEventRow): TimelineEvent {
-  return {
-    id: row.id,
-    title: row.title,
-    date: row.date,
-    type: row.type,
-    notes: row.notes || undefined,
-  }
-}
-
-function rowToInventoryItem(row: InventoryItemRow): InventoryItem {
-  return {
-    id: row.id,
-    name: row.name,
-    room: row.room,
-    disposition: row.disposition,
-    box: row.box || undefined,
-    value: row.value || undefined,
-    notes: row.notes || undefined,
-    sold: row.sold || undefined,
-    soldAmount: row.sold_amount || undefined,
-  }
-}
-
-function rowToBudget(row: BudgetRow | null): Budget | null {
-  if (!row) return null
-  return {
-    totalBudget: row.total_budget,
-    categoryBudgets: row.category_budgets as Record<string, number> | undefined,
-  }
-}
+// Import row converters from separate file (also used in tests)
+import {
+  rowToMoveDetails,
+  rowToTask,
+  rowToExpense,
+  rowToTimelineEvent,
+  rowToInventoryItem,
+  rowToBudget,
+} from "./row-converters"
 
 // Database operations
 export async function getMoveDetails(hubId: string): Promise<MoveDetails | null> {

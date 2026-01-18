@@ -38,6 +38,29 @@ See [COMPONENTS.md](./COMPONENTS.md) for detailed code patterns. Key points:
 - All data tables have `hub_id` foreign key for multi-tenancy
 - Forms use controlled components with useState
 
+### Testing
+
+Always write tests when making code changes:
+
+- **Bug fixes**: Write a test that reproduces the bug, then fix it
+- **New features**: Write tests for new components, utilities, and integrations
+- **Run tests**: Use `npm run test:run` to verify all tests pass before committing
+
+Test file locations:
+- `tests/unit/` - Pure functions, utilities, row converters
+- `tests/components/` - React component tests (rendering, interactions)
+- `tests/integration/` - Provider tests, multi-component flows
+
+Testing stack:
+- **Vitest** - Test runner with `npm test` (watch) or `npm run test:run` (single run)
+- **React Testing Library** - Component testing
+- **happy-dom** - DOM environment (used instead of jsdom for ESM compatibility)
+
+Key patterns:
+- Mock Supabase client in `tests/__mocks__/supabase.ts`
+- Global mocks (ResizeObserver, matchMedia, pointer capture) in `tests/setup.ts`
+- For Radix UI Select components, focus on render tests; use E2E for interactions
+
 ### Documentation
 
 - Keep documentation files up to date with any significant changes made
