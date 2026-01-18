@@ -113,3 +113,8 @@ Guidelines for Claude when working on this codebase:
 - Database operations are async - pages handle loading states
 - All data tables have `hub_id` foreign key for multi-tenancy
 - Forms use controlled components with useState
+
+### Documentation
+
+- Keep this file up to date with any significant changes made
+- Add or update other .md files or appropriate documentation alongside any code generation
