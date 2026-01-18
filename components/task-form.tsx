@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Task, TaskCategory, TaskPriority, TaskStatus } from "@/app/lib/types"
+import { Task, TaskCategory, TaskPriority, TaskStatus } from "@/lib/supabase/database"
 
 interface TaskFormProps {
   task?: Task | null
