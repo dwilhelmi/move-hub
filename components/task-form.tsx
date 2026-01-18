@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Task, TaskCategory, TaskPriority, TaskStatus } from "@/lib/supabase/database"
+import { dateToISO, isoToDate } from "@/lib/utils"
 
 interface TaskFormProps {
   task?: Task | null
@@ -30,7 +31,7 @@ interface TaskFormProps {
 }
 
 export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
-  const [formData, setFormData] = useState<Omit<Task, "id">>({
+  const [formData, setFormData] = useState<Omit<Task, "id" | "dueDate"> & { dueDate?: string }>({
     title: "",
     description: "",
     category: "repairs",
@@ -46,7 +47,7 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
         category: task.category,
         status: task.status,
         priority: task.priority,
-        dueDate: task.dueDate,
+        dueDate: task.dueDate ? isoToDate(task.dueDate) : undefined,
       })
     } else {
       setFormData({
@@ -61,10 +62,14 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const taskData = {
+      ...formData,
+      dueDate: formData.dueDate ? dateToISO(formData.dueDate) : undefined,
+    }
     if (task) {
-      onSave({ ...task, ...formData })
+      onSave({ ...task, ...taskData })
     } else {
-      onSave(formData)
+      onSave(taskData)
     }
     onOpenChange(false)
   }

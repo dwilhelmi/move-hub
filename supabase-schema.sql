@@ -237,8 +237,8 @@ CREATE TABLE move_details (
   hub_id UUID REFERENCES hubs(id) ON DELETE CASCADE UNIQUE,
   current_address TEXT,
   new_address TEXT,
-  move_date DATE,
-  created_date DATE,
+  move_date TIMESTAMPTZ,
+  created_date TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -261,7 +261,7 @@ CREATE TABLE tasks (
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in-progress', 'completed')),
   priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
   category TEXT,
-  due_date DATE,
+  due_date TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -282,7 +282,7 @@ CREATE TABLE expenses (
   description TEXT NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
   category TEXT NOT NULL,
-  date DATE NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -301,7 +301,7 @@ CREATE TABLE timeline_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   hub_id UUID REFERENCES hubs(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
-  date DATE NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
   type TEXT NOT NULL,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()

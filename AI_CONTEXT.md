@@ -43,3 +43,7 @@ See [COMPONENTS.md](./COMPONENTS.md) for detailed code patterns. Key points:
 - Keep documentation files up to date with any significant changes made
 - Add or update appropriate documentation files alongside any code generation
 - When adding new features, update relevant documentation files (ARCHITECTURE.md, COMPONENTS.md, etc.)
+
+### Other
+
+- Don't run `npm run build` to verify unless I explicitly say I am not running the server locally

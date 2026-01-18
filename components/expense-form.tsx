@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Expense, ExpenseCategory } from "@/app/lib/types"
+import { dateToISO, isoToDate } from "@/lib/utils"
 
 interface ExpenseFormProps {
   expense?: Expense | null
@@ -33,7 +34,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
     category: "other",
     description: "",
     amount: 0,
-    date: new Date().toISOString().split("T")[0],
+    date: isoToDate(new Date().toISOString()),
     notes: "",
   })
 
@@ -43,7 +44,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
         category: expense.category,
         description: expense.description,
         amount: expense.amount,
-        date: expense.date.split("T")[0],
+        date: isoToDate(expense.date),
         notes: expense.notes || "",
       })
     } else {
@@ -51,7 +52,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
         category: "other",
         description: "",
         amount: 0,
-        date: new Date().toISOString().split("T")[0],
+        date: isoToDate(new Date().toISOString()),
         notes: "",
       })
     }
@@ -63,12 +64,12 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
       onSave({
         ...expense,
         ...formData,
-        date: new Date(formData.date).toISOString(),
+        date: dateToISO(formData.date),
       })
     } else {
       onSave({
         ...formData,
-        date: new Date(formData.date).toISOString(),
+        date: dateToISO(formData.date),
       })
     }
     onOpenChange(false)

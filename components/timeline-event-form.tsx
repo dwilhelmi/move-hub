@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { TimelineEvent } from "@/app/lib/types"
+import { dateToISO, isoToDate } from "@/lib/utils"
 
 interface TimelineEventFormProps {
   event?: TimelineEvent | null
@@ -31,7 +32,8 @@ export function TimelineEventForm({ event, open, onOpenChange, onSave }: Timelin
 
   useEffect(() => {
     if (event) {
-      const eventDate = event.date ? new Date(event.date).toISOString().split("T")[0] : ""
+      // Convert ISO date to local date string (YYYY-MM-DD)
+      const eventDate = event.date ? isoToDate(event.date) : ""
       setFormData({
         title: event.title || "",
         description: event.notes || event.description || "",
@@ -53,12 +55,10 @@ export function TimelineEventForm({ event, open, onOpenChange, onSave }: Timelin
       return
     }
 
-    const dateTime = new Date(formData.date)
-    dateTime.setHours(12, 0, 0, 0) // Set to noon to avoid timezone issues
-
+    // Convert date string (YYYY-MM-DD) to ISO string (treating input as local date)
     const eventData = {
       title: formData.title.trim(),
-      date: dateTime.toISOString(),
+      date: dateToISO(formData.date),
       type: event?.type || "event",
       notes: formData.description.trim() || undefined,
     }

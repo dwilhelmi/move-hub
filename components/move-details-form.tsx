@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MoveDetails } from "@/app/lib/types"
+import { datetimeLocalToISO, isoToDatetimeLocal } from "@/lib/utils"
 
 interface MoveDetailsFormProps {
   moveDetails: MoveDetails | null
@@ -35,9 +36,9 @@ export function MoveDetailsForm({
 
   useEffect(() => {
     if (moveDetails) {
-      // Parse the ISO date to datetime-local format
+      // Parse the ISO date to datetime-local format (in local time)
       const dateTimeLocal = moveDetails.moveDate
-        ? new Date(moveDetails.moveDate).toISOString().slice(0, 16)
+        ? isoToDatetimeLocal(moveDetails.moveDate)
         : ""
       setFormData({
         currentAddress: moveDetails.currentAddress || "",
@@ -55,9 +56,9 @@ export function MoveDetailsForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Convert datetime-local to ISO string
+    // Convert datetime-local to ISO string (treating input as local time)
     const moveDateISO = formData.moveDate
-      ? new Date(formData.moveDate).toISOString()
+      ? datetimeLocalToISO(formData.moveDate)
       : ""
 
     const details: MoveDetails = {

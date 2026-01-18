@@ -24,6 +24,7 @@ import { DeleteConfirmDialog } from "@/components/house-prep/delete-confirm-dial
 import { DisplayTimelineEvent } from "@/components/timeline/types"
 import { TimelineList } from "@/components/timeline/timeline-list"
 import { EditStartDateDialog } from "@/components/timeline/edit-start-date-dialog"
+import { dateToISO, isoToDate } from "@/lib/utils"
 
 export default function TimelinePage() {
   const { hub, isLoading: isHubLoading } = useHub()
@@ -60,7 +61,7 @@ export default function TimelinePage() {
   // Initialize start date value for editing
   useEffect(() => {
     if (moveDetails?.createdDate && startDateValue === "") {
-      const dateStr = new Date(moveDetails.createdDate).toISOString().split("T")[0]
+      const dateStr = isoToDate(moveDetails.createdDate)
       setStartDateValue(dateStr)
     }
   }, [moveDetails?.createdDate, startDateValue])
@@ -152,7 +153,7 @@ export default function TimelinePage() {
   }
 
   const handleEditStartDate = (date: Date) => {
-    const dateStr = date.toISOString().split("T")[0]
+    const dateStr = isoToDate(date.toISOString())
     setStartDateValue(dateStr)
     setEditingStartDate(true)
   }
@@ -160,11 +161,10 @@ export default function TimelinePage() {
   const handleSaveStartDate = async () => {
     if (!hub || !moveDetails || !startDateValue) return
 
-    const dateTime = new Date(startDateValue)
-    dateTime.setHours(12, 0, 0, 0)
+    // Convert date string (YYYY-MM-DD) to ISO string (treating input as local date)
     const updatedDetails = {
       ...moveDetails,
-      createdDate: dateTime.toISOString(),
+      createdDate: dateToISO(startDateValue),
     }
     await saveMoveDetails(hub.id, updatedDetails)
     setMoveDetails(updatedDetails)
