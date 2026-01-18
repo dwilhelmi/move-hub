@@ -2,93 +2,16 @@
 
 This file provides comprehensive guidance for AI assistants working with this codebase.
 
-## Commands
+## Documentation Structure
 
-```bash
-npm run dev      # Start development server (http://localhost:3000)
-npm run build    # Build for production
-npm run lint     # Run ESLint
-npm run start    # Start production server
-```
+This project's documentation is organized into focused files:
 
-## Architecture
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture, data flow, authentication, database schema, and layout structure
+- **[COMPONENTS.md](./COMPONENTS.md)** - Component structure and code patterns
+- **[DESIGN.md](./DESIGN.md)** - Styling system and design patterns
+- **[CONFIG.md](./CONFIG.md)** - Configuration, commands, and environment setup
 
-This is a Next.js 14 app (App Router) for planning and tracking a home move. It uses Supabase for authentication, database, and multi-user collaboration.
-
-### Key Directories
-
-- `app/` - Next.js App Router pages and routes
-  - `app/lib/types.ts` - TypeScript interfaces (Task, Expense, MoveDetails, TimelineEvent, etc.)
-  - `app/lib/storage.ts` - Legacy localStorage functions (no longer primary, kept for reference)
-  - `app/login/`, `app/signup/` - Authentication pages
-  - `app/settings/` - Hub management and member invitations
-  - `app/auth/callback/` - OAuth callback handler
-- `components/` - React components
-  - `components/ui/` - Reusable UI primitives (Radix UI + shadcn/ui pattern)
-  - `components/providers/` - React context providers (AuthProvider, HubProvider)
-  - `components/house-prep/` - Feature-specific components for house prep tracker
-- `lib/supabase/` - Supabase client and database operations
-  - `client.ts` - Browser Supabase client
-  - `server.ts` - Server Supabase client
-  - `database.ts` - CRUD operations for all data types
-  - `types.ts` - Database type definitions
-- `supabase-schema.sql` - Full database schema (run in Supabase SQL Editor)
-- `supabase/migrations/` - Incremental migration files for existing databases
-- `middleware.ts` - Route protection and session management
-
-### Data Flow
-
-All data is stored in Supabase PostgreSQL with Row Level Security (RLS):
-- Users authenticate via Supabase Auth (email/password)
-- Each user belongs to a "hub" (shared move project)
-- Multiple users can share the same hub (e.g., spouse)
-- RLS policies ensure users only see data for their hub
-- Database operations are in `lib/supabase/database.ts`
-
-### Authentication & Authorization
-
-- `AuthProvider` (`components/providers/auth-provider.tsx`) - Manages user session
-- `HubProvider` (`components/providers/hub-provider.tsx`) - Manages current hub and members
-- `middleware.ts` - Protects routes, redirects unauthenticated users to /login
-- Database triggers automatically create profiles on signup and handle invites
-
-### Database Schema
-
-Key tables (see `supabase-schema.sql` for full schema):
-- `profiles` - User profiles (extends auth.users)
-- `hubs` - Shared move projects
-- `hub_members` - Maps users to hubs with roles (owner/member)
-- `hub_invites` - Pending invitations for users who haven't signed up
-- `tasks`, `expenses`, `timeline_events`, `inventory_items`, `budgets`, `move_details` - App data
-
-Helper functions for RLS:
-- `is_hub_member(hub_id)` - Check if current user is a member of a hub
-- `is_hub_owner(hub_id)` - Check if current user is an owner of a hub
-
-### Styling
-
-- Tailwind CSS with CSS variables for theming (dark/light mode via next-themes)
-- Custom colors defined in `tailwind.config.ts` using HSL CSS variables
-- The `cn()` utility from `lib/utils.ts` merges Tailwind classes
-
-### Layout Structure
-
-- `app/layout.tsx` - Root layout with ThemeProvider, AuthProvider, HubProvider
-- `app/layout-client.tsx` - Client-side layout with sidebar (desktop) and mobile navigation
-- Responsive design: sidebar hidden on mobile, replaced with slide-out drawer
-- All pages are dynamically rendered (no static generation) due to auth requirements
-
-### Path Aliases
-
-`@/*` maps to the project root (configured in tsconfig.json)
-
-### Environment Variables
-
-Required in `.env.local`:
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
+Please read these files for detailed information about the codebase.
 
 ## AI Behavior Notes
 
@@ -109,6 +32,7 @@ Guidelines for AI assistants when working on this codebase:
 
 ### Code Patterns
 
+See [COMPONENTS.md](./COMPONENTS.md) for detailed code patterns. Key points:
 - Pages use `useHub()` hook to get current hub, show `<HubSetup />` if no hub exists
 - Database operations are async - pages handle loading states
 - All data tables have `hub_id` foreign key for multi-tenancy
@@ -116,5 +40,6 @@ Guidelines for AI assistants when working on this codebase:
 
 ### Documentation
 
-- Keep this file up to date with any significant changes made
-- Add or update other .md files or appropriate documentation alongside any code generation
+- Keep documentation files up to date with any significant changes made
+- Add or update appropriate documentation files alongside any code generation
+- When adding new features, update relevant documentation files (ARCHITECTURE.md, COMPONENTS.md, etc.)
