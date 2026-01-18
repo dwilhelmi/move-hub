@@ -13,25 +13,57 @@ npm run start    # Start production server
 
 ## Architecture
 
-This is a Next.js 14 app (App Router) for planning and tracking a home move. It's a client-side app using localStorage for persistence.
+This is a Next.js 14 app (App Router) for planning and tracking a home move. It uses Supabase for authentication, database, and multi-user collaboration.
 
 ### Key Directories
 
 - `app/` - Next.js App Router pages and routes
-  - `app/lib/types.ts` - TypeScript interfaces (Task, Expense, MoveDetails, TimelineEvent)
-  - `app/lib/storage.ts` - localStorage CRUD operations for all data types
-  - `app/data/` - JSON default data (e.g., house-prep-defaults.json)
+  - `app/lib/types.ts` - TypeScript interfaces (Task, Expense, MoveDetails, TimelineEvent, etc.)
+  - `app/lib/storage.ts` - Legacy localStorage functions (no longer primary, kept for reference)
+  - `app/login/`, `app/signup/` - Authentication pages
+  - `app/settings/` - Hub management and member invitations
+  - `app/auth/callback/` - OAuth callback handler
 - `components/` - React components
   - `components/ui/` - Reusable UI primitives (Radix UI + shadcn/ui pattern)
+  - `components/providers/` - React context providers (AuthProvider, HubProvider)
   - `components/house-prep/` - Feature-specific components for house prep tracker
-- `lib/utils.ts` - Utility functions (cn for className merging)
+- `lib/supabase/` - Supabase client and database operations
+  - `client.ts` - Browser Supabase client
+  - `server.ts` - Server Supabase client
+  - `database.ts` - CRUD operations for all data types
+  - `types.ts` - Database type definitions
+- `supabase-schema.sql` - Full database schema (run in Supabase SQL Editor)
+- `supabase/migrations/` - Incremental migration files for existing databases
+- `middleware.ts` - Route protection and session management
 
 ### Data Flow
 
-All data is stored in localStorage with keys prefixed `move-hub-`:
-- Tasks and expenses use storage functions from `app/lib/storage.ts`
-- Components sync state with localStorage and listen for StorageEvent for cross-tab updates
-- Module-level caching is used in some pages to preserve state across navigation
+All data is stored in Supabase PostgreSQL with Row Level Security (RLS):
+- Users authenticate via Supabase Auth (email/password)
+- Each user belongs to a "hub" (shared move project)
+- Multiple users can share the same hub (e.g., spouse)
+- RLS policies ensure users only see data for their hub
+- Database operations are in `lib/supabase/database.ts`
+
+### Authentication & Authorization
+
+- `AuthProvider` (`components/providers/auth-provider.tsx`) - Manages user session
+- `HubProvider` (`components/providers/hub-provider.tsx`) - Manages current hub and members
+- `middleware.ts` - Protects routes, redirects unauthenticated users to /login
+- Database triggers automatically create profiles on signup and handle invites
+
+### Database Schema
+
+Key tables (see `supabase-schema.sql` for full schema):
+- `profiles` - User profiles (extends auth.users)
+- `hubs` - Shared move projects
+- `hub_members` - Maps users to hubs with roles (owner/member)
+- `hub_invites` - Pending invitations for users who haven't signed up
+- `tasks`, `expenses`, `timeline_events`, `inventory_items`, `budgets`, `move_details` - App data
+
+Helper functions for RLS:
+- `is_hub_member(hub_id)` - Check if current user is a member of a hub
+- `is_hub_owner(hub_id)` - Check if current user is an owner of a hub
 
 ### Styling
 
@@ -41,10 +73,43 @@ All data is stored in localStorage with keys prefixed `move-hub-`:
 
 ### Layout Structure
 
-- `app/layout.tsx` - Root layout with ThemeProvider
+- `app/layout.tsx` - Root layout with ThemeProvider, AuthProvider, HubProvider
 - `app/layout-client.tsx` - Client-side layout with sidebar (desktop) and mobile navigation
 - Responsive design: sidebar hidden on mobile, replaced with slide-out drawer
+- All pages are dynamically rendered (no static generation) due to auth requirements
 
 ### Path Aliases
 
 `@/*` maps to the project root (configured in tsconfig.json)
+
+### Environment Variables
+
+Required in `.env.local`:
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+## AI Behavior Notes
+
+Guidelines for Claude when working on this codebase:
+
+### Git Operations
+
+- **"Save everything"** (or similar phrasing like "save it", "commit and push") means: `git add -A && git commit && git push`
+- Do NOT perform git operations for other commands like "generate", "create", "update", etc.
+- Always include `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>` in commit messages
+
+### Database Changes
+
+- Always update `supabase-schema.sql` with the full from-scratch schema
+- Also create an incremental migration in `supabase/migrations/` for existing databases
+- Use `SECURITY DEFINER` functions for RLS helper functions to avoid recursion
+- Test RLS policies carefully - inline subqueries on the same table can cause infinite recursion
+
+### Code Patterns
+
+- Pages use `useHub()` hook to get current hub, show `<HubSetup />` if no hub exists
+- Database operations are async - pages handle loading states
+- All data tables have `hub_id` foreign key for multi-tenancy
+- Forms use controlled components with useState
