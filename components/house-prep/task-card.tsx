@@ -25,11 +25,11 @@ export function TaskCard({
   const isCompleted = task.status === "completed"
 
   return (
-    <div 
+    <div
       className={`group border-2 rounded-xl p-4 transition-all ${
-        isCompleted 
-          ? 'bg-emerald-50 border-emerald-200' 
-          : 'bg-white border-border hover:border-purple-300 hover:shadow-md'
+        isCompleted
+          ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800'
+          : 'bg-muted/50 dark:bg-muted/30 border-border hover:border-purple-300 dark:hover:border-purple-500 hover:shadow-md'
       }`}
     >
       <div className="flex items-center gap-4">
@@ -50,35 +50,35 @@ export function TaskCard({
           </label>
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${
-          task.priority === 'high' 
-            ? 'bg-red-100 text-red-700'
+          task.priority === 'high'
+            ? 'bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300'
             : task.priority === 'medium'
-            ? 'bg-amber-100 text-amber-700'
-            : 'bg-blue-100 text-blue-700'
+            ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300'
+            : 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300'
         }`}>
           {task.priority}
         </span>
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button 
-            className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
+          <button
+            className="p-2 hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-lg transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               onEdit(task)
             }}
           >
-            <Edit className="w-4 h-4 text-purple-600" />
+            <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </button>
-          <button 
-            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+          <button
+            className="p-2 hover:bg-red-100 dark:hover:bg-red-950/50 rounded-lg transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               onDelete(task.id)
             }}
           >
-            <Trash2 className="w-4 h-4 text-red-600" />
+            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
           </button>
-          <button 
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          <button
+            className="p-2 hover:bg-accent rounded-lg transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               onToggleExpand(task.id)

@@ -150,7 +150,7 @@ export default function SettingsPage() {
               {hub.members.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {member.role === "owner" && (
-                      <span className="flex items-center gap-1 text-sm text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                      <span className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 rounded">
                         <Crown className="w-3 h-3" />
                         Owner
                       </span>
@@ -183,7 +183,7 @@ export default function SettingsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/50"
                         onClick={() => removeMember(member.user_id)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -203,12 +203,12 @@ export default function SettingsPage() {
                 </h3>
                 <form onSubmit={handleInvite} className="space-y-4">
                   {inviteError && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg">
+                    <div className="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 rounded-lg">
                       {inviteError}
                     </div>
                   )}
                   {inviteSuccess && (
-                    <div className="p-3 text-sm text-green-600 bg-green-50 rounded-lg">
+                    <div className="p-3 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 rounded-lg">
                       Invitation sent! They will be added when they sign up.
                     </div>
                   )}

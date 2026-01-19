@@ -27,7 +27,7 @@ export function TimelineEventCard({
   return (
     <div className="relative flex items-center gap-6">
       {/* Icon */}
-      <span className="bg-white rounded-full">
+      <span className="bg-background rounded-full">
         <div
           className={`relative z-10 flex items-center justify-center w-16 h-16 rounded-full border-2 ${getEventColor(
             event.type,
@@ -76,10 +76,10 @@ export function TimelineEventCard({
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-semibold ${
                     event.task.priority === "high"
-                      ? "bg-red-100 text-red-700"
+                      ? "bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300"
                       : event.task.priority === "medium"
-                      ? "bg-amber-100 text-amber-700"
-                      : "bg-blue-100 text-blue-700"
+                      ? "bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300"
+                      : "bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300"
                   }`}
                 >
                   {event.task.priority}
@@ -119,22 +119,22 @@ export function TimelineEventCard({
           {event.type === "custom" && (
             <div className="mt-4 pt-4 border-t border-border/50">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-purple-600 font-medium">Custom Event</span>
+                <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Custom Event</span>
                 <div className="ml-auto flex items-center gap-2">
                   {onEditCustomEvent && (
                     <button
                       onClick={onEditCustomEvent}
-                      className="p-1.5 hover:bg-purple-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-lg transition-colors"
                     >
-                      <Edit className="w-4 h-4 text-purple-600" />
+                      <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </button>
                   )}
                   {onDeleteCustomEvent && (
                     <button
                       onClick={onDeleteCustomEvent}
-                      className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-red-100 dark:hover:bg-red-950/50 rounded-lg transition-colors"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                     </button>
                   )}
                 </div>
