@@ -75,7 +75,7 @@ export function MoveDetailsForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="mx-4 sm:mx-auto">
+      <DialogContent className="sm:mx-auto">
         <DialogHeader>
           <DialogTitle>
             {moveDetails ? "Edit Move Details" : "Set Up Your Move"}

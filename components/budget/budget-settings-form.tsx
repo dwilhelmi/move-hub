@@ -69,7 +69,7 @@ export function BudgetSettingsForm({ budget, open, onOpenChange, onSave }: Budge
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg mx-4 sm:mx-auto">
+      <DialogContent className="max-w-lg sm:mx-auto">
         <DialogHeader>
           <DialogTitle>{budget ? "Edit Budget" : "Set Budget"}</DialogTitle>
           <DialogDescription>

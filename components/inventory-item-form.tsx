@@ -92,7 +92,7 @@ export function InventoryItemForm({ item, open, onOpenChange, onSave }: Inventor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg mx-4 sm:mx-auto">
+      <DialogContent className="max-w-lg sm:mx-auto">
         <DialogHeader>
           <DialogTitle>{item ? "Edit Item" : "Add Item"}</DialogTitle>
           <DialogDescription>
