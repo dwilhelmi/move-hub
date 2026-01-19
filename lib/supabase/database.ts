@@ -101,6 +101,7 @@ export async function addTask(hubId: string, task: Omit<Task, "id">): Promise<Ta
       priority: task.priority,
       category: task.category || null,
       due_date: task.dueDate || null,
+      cost: task.cost || null,
     })
     .select()
     .single()
@@ -118,6 +119,7 @@ export async function updateTask(taskId: string, task: Partial<Task>): Promise<v
       priority: task.priority,
       category: task.category,
       due_date: task.dueDate,
+      cost: task.cost,
       updated_at: new Date().toISOString(),
     })
     .eq("id", taskId)

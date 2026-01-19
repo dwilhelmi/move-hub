@@ -262,6 +262,7 @@ CREATE TABLE tasks (
   priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
   category TEXT,
   due_date TIMESTAMPTZ,
+  cost DECIMAL(10,2),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

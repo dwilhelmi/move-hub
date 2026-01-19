@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Edit, Trash2 } from "lucide-react"
-import { formatDate } from "@/components/house-prep/constants"
+import { formatDate } from "@/components/move-prep/constants"
 import Link from "next/link"
 import { DisplayTimelineEvent } from "./types"
 import { getEventIcon, getEventColor, calculateDaysUntil } from "./constants"
@@ -93,7 +93,7 @@ export function TimelineEventCard({
                   </span>
                 )}
                 <Link
-                  href="/house-prep"
+                  href="/move-prep"
                   className="ml-auto text-xs text-primary hover:underline"
                 >
                   View Task →

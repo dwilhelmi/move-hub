@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import {
   formatDate,
   formatCurrency as formatCurrencyHousePrep,
-} from "@/components/house-prep/constants"
+} from "@/components/move-prep/constants"
 import { formatCurrency as formatCurrencyBudget } from "@/components/budget/constants"
 
 describe("House Prep Helper Functions", () => {
@@ -42,7 +42,7 @@ describe("House Prep Helper Functions", () => {
     })
   })
 
-  describe("formatCurrency (house-prep)", () => {
+  describe("formatCurrency (move-prep)", () => {
     it("formats zero", () => {
       expect(formatCurrencyHousePrep(0)).toBe("$0.00")
     })

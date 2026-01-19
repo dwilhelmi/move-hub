@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { render, screen } from "@testing-library/react"
-import { ProgressOverview } from "@/components/house-prep/progress-overview"
+import { ProgressOverview } from "@/components/move-prep/progress-overview"
 
 describe("ProgressOverview", () => {
   describe("Rendering", () => {

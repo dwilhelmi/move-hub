@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen } from "@testing-library/react"
-import { TaskFilter } from "@/components/house-prep/task-filter"
+import { TaskFilter } from "@/components/move-prep/task-filter"
 
 describe("TaskFilter", () => {
   const mockOnChange = vi.fn()

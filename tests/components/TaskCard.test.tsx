@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { TaskCard } from "@/components/house-prep/task-card"
+import { TaskCard } from "@/components/move-prep/task-card"
 import { Task } from "@/app/lib/types"
 
 const createTask = (overrides: Partial<Task> = {}): Task => ({

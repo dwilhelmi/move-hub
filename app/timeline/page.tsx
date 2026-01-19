@@ -20,7 +20,7 @@ import {
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { TimelineEventForm } from "@/components/timeline-event-form"
-import { DeleteConfirmDialog } from "@/components/house-prep/delete-confirm-dialog"
+import { DeleteConfirmDialog } from "@/components/move-prep/delete-confirm-dialog"
 import { DisplayTimelineEvent } from "@/components/timeline/types"
 import { TimelineList } from "@/components/timeline/timeline-list"
 import { EditStartDateDialog } from "@/components/timeline/edit-start-date-dialog"
