@@ -156,9 +156,9 @@ export default function HousePrepPage() {
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Header */}
-      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-8">
-        <h1 className="text-3xl font-bold mb-2">House Prep Tracker</h1>
-        <p className="text-primary-foreground/90">Track your progress getting your house ready to sell</p>
+      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-6 sm:p-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">House Prep Tracker</h1>
+        <p className="text-sm sm:text-base text-primary-foreground/90">Track your progress getting your house ready to sell</p>
       </Card>
 
       <ProgressOverview

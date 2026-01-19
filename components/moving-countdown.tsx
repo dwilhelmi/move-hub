@@ -29,10 +29,10 @@ function CountdownDigit({ value, label, isLoading, allZero }: { value: number; l
 
   return (
     <div className="text-center">
-      <div className="text-3xl font-bold mb-1 text-countdown-foreground transition-all duration-300">
+      <div className="text-2xl sm:text-3xl font-bold mb-1 text-countdown-foreground transition-all duration-300">
         {(isLoading && allZero && displayValue === 0) ? "--" : String(displayValue).padStart(2, "0")}
       </div>
-      <div className="text-xs opacity-80 text-countdown-foreground">{label}</div>
+      <div className="text-[10px] sm:text-xs opacity-80 text-countdown-foreground">{label}</div>
     </div>
   )
 }
@@ -76,8 +76,8 @@ export function MovingCountdown({ targetDate }: MovingCountdownProps) {
 
   return (
     <Card className="bg-countdown-bg text-countdown-foreground border-0 rounded-2xl p-6">
-      <h3 className="text-lg font-semibold mb-4 opacity-90">Moving Countdown</h3>
-      <div className="grid grid-cols-4 gap-4">
+      <h3 className="text-base sm:text-lg font-semibold mb-4 opacity-90">Moving Countdown</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <CountdownDigit 
           value={timeRemaining.days} 
           label="Days" 

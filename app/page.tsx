@@ -115,11 +115,11 @@ export default function Home() {
       {/* Welcome Banner */}
       <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl overflow-hidden relative">
         <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
-        <CardHeader className="relative p-8">
-          <CardTitle className="text-4xl font-bold mb-2">
+        <CardHeader className="relative p-6 sm:p-8">
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             {hub.name}
           </CardTitle>
-          <CardDescription className="text-primary-foreground/90 text-lg">
+          <CardDescription className="text-primary-foreground/90 text-base sm:text-lg">
             Your complete companion for planning and executing your move
           </CardDescription>
         </CardHeader>
@@ -167,8 +167,8 @@ export default function Home() {
 
       {/* Quick Actions */}
       <Card className="p-6">
-        <CardTitle className="text-xl font-bold mb-4">Quick Actions</CardTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <CardTitle className="text-lg sm:text-xl font-bold mb-4">Quick Actions</CardTitle>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           <button
             onClick={() => setShowTaskForm(true)}
             className="flex items-center gap-3 p-4 bg-muted hover:bg-accent rounded-xl border-2 border-border hover:border-primary transition-all"

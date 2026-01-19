@@ -63,12 +63,12 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Header */}
-      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-8">
+      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-6 sm:p-8">
         <div className="flex items-center gap-3">
-          <Settings className="w-8 h-8" />
+          <Settings className="w-6 h-6 sm:w-8 sm:h-8" />
           <div>
-            <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="text-primary-foreground/90">
+            <h1 className="text-2xl sm:text-3xl font-bold">Settings</h1>
+            <p className="text-sm sm:text-base text-primary-foreground/90">
               Manage your hub and account
             </p>
           </div>
@@ -212,15 +212,16 @@ export default function SettingsPage() {
                       Invitation sent! They will be added when they sign up.
                     </div>
                   )}
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       type="email"
                       placeholder="partner@example.com"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
                       required
+                      className="flex-1"
                     />
-                    <Button type="submit" disabled={isInviting}>
+                    <Button type="submit" disabled={isInviting} className="sm:w-auto">
                       {isInviting ? "Inviting..." : "Invite"}
                     </Button>
                   </div>

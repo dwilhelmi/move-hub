@@ -196,9 +196,9 @@ export default function TimelinePage() {
   if (!moveDetails?.moveDate) {
     return (
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
-        <Card className="bg-primary text-primary-foreground border-0 rounded-2xl p-8 mb-6">
-          <h1 className="text-3xl font-bold mb-2">Timeline</h1>
-          <p className="text-primary-foreground/90">Plan your moving timeline and milestones</p>
+        <Card className="bg-primary text-primary-foreground border-0 rounded-2xl p-6 sm:p-8 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Timeline</h1>
+          <p className="text-sm sm:text-base text-primary-foreground/90">Plan your moving timeline and milestones</p>
         </Card>
 
         <Card className="p-8 text-center">
@@ -216,15 +216,15 @@ export default function TimelinePage() {
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Header */}
-      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-8">
-        <div className="flex items-center justify-between">
+      <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Timeline</h1>
-            <p className="text-primary-foreground/90">Plan your moving timeline and milestones</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Timeline</h1>
+            <p className="text-sm sm:text-base text-primary-foreground/90">Plan your moving timeline and milestones</p>
           </div>
           <Button
             onClick={() => setShowAddForm(true)}
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Event

@@ -104,3 +104,167 @@ className={`
 - Border radius, spacing, and other design tokens are consistent across components
 - Responsive design is handled through Tailwind's responsive prefixes
 - **All new components must support dark mode** using the patterns described above
+
+## Responsive Design Best Practices
+
+**CRITICAL: All components must work on mobile devices (320px+) through desktop**
+
+### Breakpoints
+
+Tailwind's default breakpoints are used throughout the application:
+- `sm:` - 640px and up (small tablets, landscape phones)
+- `md:` - 768px and up (tablets)
+- `lg:` - 1024px and up (desktops)
+- `xl:` - 1280px and up (large desktops)
+
+### Common Responsive Patterns
+
+#### Text Sizing
+Always scale text appropriately for mobile:
+```tsx
+// ❌ BAD - Fixed size, too large on mobile
+className="text-4xl font-bold"
+
+// ✅ GOOD - Responsive sizing
+className="text-2xl sm:text-3xl md:text-4xl font-bold"
+```
+
+**Standard text size patterns:**
+- Page headers: `text-2xl sm:text-3xl font-bold`
+- Section headers: `text-lg sm:text-xl font-bold`
+- Body text: `text-sm sm:text-base`
+- Small labels: `text-xs sm:text-sm`
+
+#### Grid Layouts
+Grids should stack on mobile and expand on larger screens:
+```tsx
+// ❌ BAD - Fixed 3 columns, will be cramped on mobile
+className="grid grid-cols-3 gap-4"
+
+// ✅ GOOD - Stacks on mobile, expands on larger screens
+className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4"
+```
+
+**Common grid patterns:**
+- Stats/cards: `grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`
+- Two-column layout: `grid-cols-1 md:grid-cols-2`
+- Countdown/metrics: `grid-cols-2 sm:grid-cols-4`
+
+#### Spacing and Padding
+Reduce padding on mobile to maximize content space:
+```tsx
+// ❌ BAD - Fixed padding, wastes space on mobile
+className="p-8"
+
+// ✅ GOOD - Smaller padding on mobile
+className="p-6 sm:p-8"
+```
+
+**Common spacing patterns:**
+- Card padding: `p-6 sm:p-8`
+- Gaps in grids: `gap-3 sm:gap-4` or `gap-2 sm:gap-4`
+- Element spacing: `gap-3 sm:gap-4 md:gap-6`
+
+#### Flex Layouts
+Stack flex layouts on mobile, side-by-side on larger screens:
+```tsx
+// ❌ BAD - Always horizontal, elements may overflow on mobile
+className="flex items-center justify-between"
+
+// ✅ GOOD - Stacks on mobile, horizontal on larger screens
+className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+```
+
+**Common flex patterns:**
+- Header with button: `flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`
+- Form with submit: `flex flex-col sm:flex-row gap-2`
+- Filter bar: `flex flex-col sm:flex-row items-start sm:items-center gap-4`
+
+#### Button Widths
+Buttons should be full-width on mobile, auto on larger screens:
+```tsx
+// ❌ BAD - Fixed width, doesn't adapt to mobile
+<Button onClick={handler}>
+  Submit
+</Button>
+
+// ✅ GOOD - Full width on mobile, auto on larger screens
+<Button onClick={handler} className="w-full sm:w-auto">
+  Submit
+</Button>
+```
+
+#### Icon and Image Sizing
+Scale icons and images appropriately:
+```tsx
+// ❌ BAD - Fixed size, too large on mobile
+className="w-16 h-16"
+
+// ✅ GOOD - Smaller on mobile, larger on desktop
+className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
+```
+
+### Examples from the Codebase
+
+**Dashboard Welcome Banner (app/page.tsx):**
+```tsx
+// ✅ Responsive header with padding and text sizing
+<CardHeader className="relative p-6 sm:p-8">
+  <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+    {hub.name}
+  </CardTitle>
+  <CardDescription className="text-primary-foreground/90 text-base sm:text-lg">
+    Your complete companion for planning and executing your move
+  </CardDescription>
+</CardHeader>
+```
+
+**Moving Countdown (components/moving-countdown.tsx):**
+```tsx
+// ✅ Grid that stacks on mobile (2 columns), expands on larger screens (4 columns)
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+  <div className="text-2xl sm:text-3xl font-bold">
+    {displayValue}
+  </div>
+</div>
+```
+
+**Settings Invite Form (app/settings/page.tsx):**
+```tsx
+// ✅ Form that stacks on mobile, horizontal on larger screens
+<div className="flex flex-col sm:flex-row gap-2">
+  <Input className="flex-1" />
+  <Button className="sm:w-auto">
+    Invite
+  </Button>
+</div>
+```
+
+**Timeline Header (app/timeline/page.tsx):**
+```tsx
+// ✅ Header with button that stacks on mobile
+<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+  <div>
+    <h1 className="text-2xl sm:text-3xl font-bold mb-2">Timeline</h1>
+    <p className="text-sm sm:text-base">Plan your moving timeline</p>
+  </div>
+  <Button className="w-full sm:w-auto">
+    Add Event
+  </Button>
+</div>
+```
+
+### Testing Responsive Design
+
+When building or modifying components:
+1. **Test at 375px width** (iPhone SE, small phones)
+2. **Test at 768px width** (iPad portrait, tablets)
+3. **Test at 1024px width** (iPad landscape, small laptops)
+4. **Test at 1440px+ width** (desktop monitors)
+
+Common issues to watch for:
+- Text overflow or wrapping unexpectedly
+- Horizontal scrollbars appearing
+- Elements overlapping or too cramped
+- Buttons or form inputs that are too small to tap (minimum 44x44px hit area)
+- Images or icons that are too large and dominate the screen

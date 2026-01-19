@@ -25,11 +25,11 @@ export function TimelineEventCard({
   const isToday = daysUntil === 0
 
   return (
-    <div className="relative flex items-center gap-6">
+    <div className="relative flex items-center gap-3 sm:gap-4 md:gap-6">
       {/* Icon */}
       <span className="bg-background rounded-full">
         <div
-          className={`relative z-10 flex items-center justify-center w-16 h-16 rounded-full border-2 ${getEventColor(
+          className={`relative z-10 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full border-2 ${getEventColor(
             event.type,
             event.isCompleted
           )} shrink-0`}

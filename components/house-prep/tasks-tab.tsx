@@ -54,12 +54,12 @@ export function TasksTab({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-muted-foreground">Filter:</span>
           <TaskFilter value={filter} onChange={setFilter} />
         </div>
-        <Button onClick={onAddClick} className="flex items-center gap-2 bg-primary hover:bg-primary/90 font-semibold rounded-lg shadow-lg hover:shadow-lg transition-all">
+        <Button onClick={onAddClick} className="flex items-center gap-2 bg-primary hover:bg-primary/90 font-semibold rounded-lg shadow-lg hover:shadow-lg transition-all w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           Add Task
         </Button>
