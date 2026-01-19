@@ -28,6 +28,7 @@ import { ProgressOverview } from "@/components/house-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
 import { MoveDetailsForm } from "@/components/move-details-form"
+import { HomeSkeleton } from "@/components/home-skeleton"
 
 export default function Home() {
   const { hub, isLoading: isHubLoading } = useHub()
@@ -96,16 +97,12 @@ export default function Home() {
     setShowInventoryForm(false)
   }
 
-  // Show loading while checking hub
-  if (isHubLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    )
+  // Show skeleton while hub is loading or while initial data loads
+  if (isHubLoading || isLoadingMoveDetails) {
+    return <HomeSkeleton />
   }
 
-  // Show hub setup if no hub
+  // Show hub setup if no hub (after loading completes)
   if (!hub) {
     return <HubSetup />
   }
