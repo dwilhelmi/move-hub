@@ -77,7 +77,7 @@ export function ExpenseForm({ expense, open, onOpenChange, onSave }: ExpenseForm
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="mx-4 sm:mx-auto">
+      <DialogContent className="sm:mx-auto">
         <DialogHeader>
           <DialogTitle>{expense ? "Edit Expense" : "Add Expense"}</DialogTitle>
           <DialogDescription>
