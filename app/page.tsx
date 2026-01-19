@@ -116,12 +116,9 @@ export default function Home() {
       <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl overflow-hidden relative">
         <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
         <CardHeader className="relative p-6 sm:p-8">
-          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold">
             {hub.name}
           </CardTitle>
-          <CardDescription className="text-primary-foreground/90 text-base sm:text-lg">
-            Your complete companion for planning and executing your move
-          </CardDescription>
         </CardHeader>
       </Card>
 
