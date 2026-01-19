@@ -7,7 +7,8 @@ export function HomeSkeleton() {
       <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl overflow-hidden relative">
         <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
         <CardHeader className="relative p-6 sm:p-8">
-          <div className="h-10 sm:h-12 md:h-14 bg-white/20 rounded-lg animate-pulse w-64 max-w-full"></div>
+          <div className="h-10 sm:h-12 md:h-14 bg-white/20 rounded-lg animate-pulse w-64 max-w-full mb-2"></div>
+          <div className="h-5 sm:h-6 bg-white/20 rounded animate-pulse w-96 max-w-full"></div>
         </CardHeader>
       </Card>
 
