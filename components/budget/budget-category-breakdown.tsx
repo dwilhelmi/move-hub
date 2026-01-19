@@ -1,22 +1,27 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { Budget, Expense, ExpenseCategory } from "@/app/lib/types"
+import { Budget, Expense, Task, ExpenseCategory } from "@/app/lib/types"
 import { categoryLabels, categoryOrder, categoryColors, categoryBgColors, categoryTextColors, formatCurrency } from "./constants"
 import { cn } from "@/lib/utils"
 
 interface BudgetCategoryBreakdownProps {
   budget: Budget | null
   expenses: Expense[]
+  tasks: Task[]
   className?: string
 }
 
-export function BudgetCategoryBreakdown({ budget, expenses, className }: BudgetCategoryBreakdownProps) {
-  // Calculate spending by category
+export function BudgetCategoryBreakdown({ budget, expenses, tasks, className }: BudgetCategoryBreakdownProps) {
+  // Calculate spending by category (combining expenses and task costs)
   const spendingByCategory = categoryOrder.reduce((acc, category) => {
-    acc[category] = expenses
+    const expenseTotal = expenses
       .filter((e) => e.category === category)
       .reduce((sum, e) => sum + e.amount, 0)
+    const taskCostTotal = tasks
+      .filter((t) => t.category === category)
+      .reduce((sum, t) => sum + (t.cost || 0), 0)
+    acc[category] = expenseTotal + taskCostTotal
     return acc
   }, {} as Record<ExpenseCategory, number>)
 

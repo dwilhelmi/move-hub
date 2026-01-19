@@ -24,7 +24,7 @@ import { TaskForm } from "@/components/task-form"
 import { ExpenseForm } from "@/components/expense-form"
 import { TimelineEventForm } from "@/components/timeline-event-form"
 import { InventoryItemForm } from "@/components/inventory-item-form"
-import { ProgressOverview } from "@/components/house-prep/progress-overview"
+import { ProgressOverview } from "@/components/move-prep/progress-overview"
 import { MovingCountdown } from "@/components/moving-countdown"
 import { MoveDetailsCard } from "@/components/move-details-card"
 import { MoveDetailsForm } from "@/components/move-details-form"
@@ -133,7 +133,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <MovingCountdown targetDate={new Date(moveDetails.moveDate)} />
 
-          <Link href="/house-prep" className="block">
+          <Link href="/move-prep" className="block">
             <ProgressOverview
               completedCount={tasksCompleted}
               totalCount={totalTasks}
@@ -145,7 +145,7 @@ export default function Home() {
 
       {!moveDetails?.moveDate && (
         <div className="mb-8">
-          <Link href="/house-prep" className="block">
+          <Link href="/move-prep" className="block">
             <ProgressOverview
               completedCount={tasksCompleted}
               totalCount={totalTasks}

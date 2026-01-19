@@ -3,7 +3,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Task } from "@/app/lib/types"
 import { Edit, Trash2, ChevronDown } from "lucide-react"
-import { formatDate } from "./constants"
+import { formatDate, formatCurrency } from "./constants"
 
 interface TaskCardProps {
   task: Task
@@ -50,16 +50,23 @@ export function TaskCard({
             >
               {task.title}
             </label>
-            {/* Priority badge - below on mobile, to the right on desktop */}
-            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 self-start ${
-              task.priority === 'high'
-                ? 'bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300'
-                : task.priority === 'medium'
-                ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300'
-                : 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300'
-            }`}>
-              {task.priority}
-            </span>
+            {/* Cost and Priority badges - below on mobile, to the right on desktop */}
+            <div className="flex items-center gap-2 shrink-0 self-start">
+              {task.cost && (
+                <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300">
+                  {formatCurrency(task.cost)}
+                </span>
+              )}
+              <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                task.priority === 'high'
+                  ? 'bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300'
+                  : task.priority === 'medium'
+                  ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300'
+                  : 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300'
+              }`}>
+                {task.priority}
+              </span>
+            </div>
           </div>
         </div>
       </div>

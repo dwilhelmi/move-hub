@@ -14,7 +14,7 @@ import {
 import { InventoryStats } from "@/components/inventory/inventory-stats"
 import { InventoryList } from "@/components/inventory/inventory-list"
 import { InventoryItemForm } from "@/components/inventory-item-form"
-import { DeleteConfirmDialog } from "@/components/house-prep/delete-confirm-dialog"
+import { DeleteConfirmDialog } from "@/components/move-prep/delete-confirm-dialog"
 
 export default function InventoryPage() {
   const { hub, isLoading: isHubLoading } = useHub()

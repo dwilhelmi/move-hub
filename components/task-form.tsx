@@ -37,6 +37,7 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
     category: "repairs",
     status: "pending",
     priority: "medium",
+    cost: undefined,
   })
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
         status: task.status,
         priority: task.priority,
         dueDate: task.dueDate ? isoToDate(task.dueDate) : undefined,
+        cost: task.cost,
       })
     } else {
       setFormData({
@@ -56,6 +58,7 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
         category: "repairs",
         status: "pending",
         priority: "medium",
+        cost: undefined,
       })
     }
   }, [task, open])
@@ -187,6 +190,24 @@ export function TaskForm({ task, open, onOpenChange, onSave }: TaskFormProps) {
                   }
                 />
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="cost">Estimated Cost</Label>
+              <Input
+                id="cost"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={formData.cost ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    cost: e.target.value ? parseFloat(e.target.value) : undefined,
+                  })
+                }
+              />
             </div>
 
           </div>

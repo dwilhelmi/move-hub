@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Budget, Expense, InventoryItem } from "@/app/lib/types"
+import { Budget, Expense, Task, InventoryItem } from "@/app/lib/types"
 import { Settings, TrendingDown, TrendingUp, Wallet } from "lucide-react"
 import { formatCurrency } from "./constants"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 interface BudgetOverviewProps {
   budget: Budget | null
   expenses: Expense[]
+  tasks: Task[]
   soldItems: InventoryItem[]
   onEditBudget: () => void
   className?: string
@@ -18,11 +19,14 @@ interface BudgetOverviewProps {
 export function BudgetOverview({
   budget,
   expenses,
+  tasks,
   soldItems,
   onEditBudget,
   className,
 }: BudgetOverviewProps) {
-  const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0)
+  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
+  const totalTaskCosts = tasks.reduce((sum, t) => sum + (t.cost || 0), 0)
+  const totalSpent = totalExpenses + totalTaskCosts
   const totalIncome = soldItems.reduce((sum, i) => sum + (i.soldAmount || 0), 0)
   const netCost = totalSpent - totalIncome
 

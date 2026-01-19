@@ -38,6 +38,7 @@ export function rowToTask(row: TaskRow): Task {
     priority: row.priority,
     category: row.category || undefined,
     dueDate: row.due_date || undefined,
+    cost: row.cost || undefined,
   }
 }
 

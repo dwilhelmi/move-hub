@@ -8,36 +8,46 @@ import {
   getBudget,
   saveBudget,
   getExpenses,
+  addExpense as dbAddExpense,
+  getTasks,
   getInventoryItems,
   Budget,
   Expense,
+  Task,
   InventoryItem,
 } from "@/lib/supabase/database"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 import { BudgetOverview } from "@/components/budget/budget-overview"
 import { BudgetCategoryBreakdown } from "@/components/budget/budget-category-breakdown"
 import { SellingIncome } from "@/components/budget/selling-income"
 import { BudgetSettingsForm } from "@/components/budget/budget-settings-form"
+import { ExpenseForm } from "@/components/expense-form"
 
 export default function BudgetPage() {
   const { hub, isLoading: isHubLoading } = useHub()
   const [budget, setBudget] = useState<Budget | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showSettingsForm, setShowSettingsForm] = useState(false)
+  const [showExpenseForm, setShowExpenseForm] = useState(false)
 
   const loadData = useCallback(async () => {
     if (!hub) return
 
     setIsLoading(true)
-    const [storedBudget, storedExpenses, storedItems] = await Promise.all([
+    const [storedBudget, storedExpenses, storedTasks, storedItems] = await Promise.all([
       getBudget(hub.id),
       getExpenses(hub.id),
+      getTasks(hub.id),
       getInventoryItems(hub.id),
     ])
 
     setBudget(storedBudget)
     setExpenses(storedExpenses)
+    setTasks(storedTasks)
     setInventoryItems(storedItems)
     setIsLoading(false)
   }, [hub])
@@ -51,6 +61,15 @@ export default function BudgetPage() {
     await saveBudget(hub.id, newBudget)
     setBudget(newBudget)
     setShowSettingsForm(false)
+  }
+
+  const handleSaveExpense = async (expenseData: Omit<Expense, "id">) => {
+    if (!hub) return
+    const newExpense = await dbAddExpense(hub.id, expenseData)
+    if (newExpense) {
+      setExpenses([...expenses, newExpense])
+    }
+    setShowExpenseForm(false)
   }
 
   const soldItems = inventoryItems.filter((i) => i.disposition === "sell" && i.sold)
@@ -81,22 +100,34 @@ export default function BudgetPage() {
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
       {/* Header */}
       <Card className="mb-6 bg-primary text-primary-foreground border-0 rounded-2xl p-6 sm:p-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Budget</h1>
-        <p className="text-sm sm:text-base text-primary-foreground/90">
-          Track your moving expenses and income from sales
-        </p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Budget</h1>
+            <p className="text-sm sm:text-base text-primary-foreground/90">
+              Track your moving expenses and income from sales
+            </p>
+          </div>
+          <Button
+            onClick={() => setShowExpenseForm(true)}
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 w-full sm:w-auto"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Expense
+          </Button>
+        </div>
       </Card>
 
       <div className="space-y-6">
         <BudgetOverview
           budget={budget}
           expenses={expenses}
+          tasks={tasks}
           soldItems={soldItems}
           onEditBudget={() => setShowSettingsForm(true)}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BudgetCategoryBreakdown budget={budget} expenses={expenses} />
+          <BudgetCategoryBreakdown budget={budget} expenses={expenses} tasks={tasks} />
           <SellingIncome items={inventoryItems} />
         </div>
       </div>
@@ -106,6 +137,12 @@ export default function BudgetPage() {
         open={showSettingsForm}
         onOpenChange={setShowSettingsForm}
         onSave={handleSaveBudget}
+      />
+
+      <ExpenseForm
+        open={showExpenseForm}
+        onOpenChange={setShowExpenseForm}
+        onSave={handleSaveExpense}
       />
     </div>
   )

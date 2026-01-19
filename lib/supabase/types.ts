@@ -117,6 +117,7 @@ export interface Database {
           priority: "low" | "medium" | "high"
           category: string | null
           due_date: string | null
+          cost: number | null
           created_at: string
           updated_at: string
         }
@@ -129,6 +130,7 @@ export interface Database {
           priority?: "low" | "medium" | "high"
           category?: string | null
           due_date?: string | null
+          cost?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -141,6 +143,7 @@ export interface Database {
           priority?: "low" | "medium" | "high"
           category?: string | null
           due_date?: string | null
+          cost?: number | null
           created_at?: string
           updated_at?: string
         }

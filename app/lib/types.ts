@@ -10,6 +10,7 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   dueDate?: string // ISO date string
+  cost?: number
 }
 
 export type ExpenseCategory = "repairs" | "staging" | "cleaning" | "paperwork" | "photos" | "movers" | "packing" | "travel" | "storage" | "utilities" | "other"
