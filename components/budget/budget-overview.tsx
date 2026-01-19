@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Budget, Expense, Task, InventoryItem } from "@/app/lib/types"
-import { Settings, TrendingDown, TrendingUp, Wallet } from "lucide-react"
+import { Settings, TrendingDown, TrendingUp, Wallet, Clock } from "lucide-react"
 import { formatCurrency } from "./constants"
 import { cn } from "@/lib/utils"
 
@@ -25,10 +25,16 @@ export function BudgetOverview({
   className,
 }: BudgetOverviewProps) {
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
-  const totalTaskCosts = tasks.reduce((sum, t) => sum + (t.cost || 0), 0)
-  const totalSpent = totalExpenses + totalTaskCosts
+  const completedTaskCosts = tasks
+    .filter((t) => t.status === "completed")
+    .reduce((sum, t) => sum + (t.cost || 0), 0)
+  const pendingTaskCosts = tasks
+    .filter((t) => t.status !== "completed")
+    .reduce((sum, t) => sum + (t.cost || 0), 0)
+  const totalSpent = totalExpenses + completedTaskCosts
   const totalIncome = soldItems.reduce((sum, i) => sum + (i.soldAmount || 0), 0)
-  const netCost = totalSpent - totalIncome
+  const totalProjected = totalSpent + pendingTaskCosts
+  const netCost = totalProjected - totalIncome
 
   if (!budget) {
     return (
@@ -79,11 +85,16 @@ export function BudgetOverview({
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="text-center p-4 bg-red-50 dark:bg-red-950/30 rounded-xl">
           <TrendingDown className="w-6 h-6 text-red-600 dark:text-red-400 mx-auto mb-2" />
           <div className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totalSpent)}</div>
-          <div className="text-xs text-muted-foreground">Total Spent</div>
+          <div className="text-xs text-muted-foreground">Actual Spent</div>
+        </div>
+        <div className="text-center p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl">
+          <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400 mx-auto mb-2" />
+          <div className="text-lg sm:text-xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(pendingTaskCosts)}</div>
+          <div className="text-xs text-muted-foreground">Pending Costs</div>
         </div>
         <div className="text-center p-4 bg-green-50 dark:bg-green-950/30 rounded-xl">
           <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
