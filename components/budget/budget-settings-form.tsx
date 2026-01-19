@@ -101,7 +101,7 @@ export function BudgetSettingsForm({ budget, open, onOpenChange, onSave }: Budge
             <button
               type="button"
               onClick={() => setShowCategoryBudgets(!showCategoryBudgets)}
-              className="flex items-center justify-between w-full p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+              className="flex items-center justify-between w-full p-3 bg-muted hover:bg-accent transition-colors rounded-lg"
             >
               <span className="text-sm font-medium">Category Budgets (Optional)</span>
               {showCategoryBudgets ? (
@@ -112,7 +112,7 @@ export function BudgetSettingsForm({ budget, open, onOpenChange, onSave }: Budge
             </button>
 
             {showCategoryBudgets && (
-              <div className="grid gap-3 p-4 bg-slate-50 rounded-lg">
+              <div className="grid gap-3 p-4 bg-muted rounded-lg">
                 {categoryOrder.map((category) => (
                   <div key={category} className="grid grid-cols-2 gap-2 items-center">
                     <Label htmlFor={`cat-${category}`} className="text-sm">

@@ -59,11 +59,11 @@ export function BudgetOverview({
           <span className="text-sm text-muted-foreground">
             {formatCurrency(netCost)} of {formatCurrency(budget.totalBudget)}
           </span>
-          <span className={cn("text-sm font-medium", isOverBudget ? "text-red-600" : "text-green-600")}>
+          <span className={cn("text-sm font-medium", isOverBudget ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400")}>
             {isOverBudget ? "Over budget!" : `${formatCurrency(remaining)} remaining`}
           </span>
         </div>
-        <div className="h-4 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-all",
@@ -76,19 +76,19 @@ export function BudgetOverview({
 
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="text-center p-4 bg-red-50 rounded-xl">
-          <TrendingDown className="w-6 h-6 text-red-600 mx-auto mb-2" />
-          <div className="text-xl font-bold text-red-600">{formatCurrency(totalSpent)}</div>
+        <div className="text-center p-4 bg-red-50 dark:bg-red-950/30 rounded-xl">
+          <TrendingDown className="w-6 h-6 text-red-600 dark:text-red-400 mx-auto mb-2" />
+          <div className="text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totalSpent)}</div>
           <div className="text-xs text-muted-foreground">Total Spent</div>
         </div>
-        <div className="text-center p-4 bg-green-50 rounded-xl">
-          <TrendingUp className="w-6 h-6 text-green-600 mx-auto mb-2" />
-          <div className="text-xl font-bold text-green-600">{formatCurrency(totalIncome)}</div>
+        <div className="text-center p-4 bg-green-50 dark:bg-green-950/30 rounded-xl">
+          <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
+          <div className="text-xl font-bold text-green-600 dark:text-green-400">{formatCurrency(totalIncome)}</div>
           <div className="text-xs text-muted-foreground">From Sales</div>
         </div>
-        <div className={cn("text-center p-4 rounded-xl", isOverBudget ? "bg-red-50" : "bg-blue-50")}>
-          <Wallet className={cn("w-6 h-6 mx-auto mb-2", isOverBudget ? "text-red-600" : "text-blue-600")} />
-          <div className={cn("text-xl font-bold", isOverBudget ? "text-red-600" : "text-blue-600")}>
+        <div className={cn("text-center p-4 rounded-xl", isOverBudget ? "bg-red-50 dark:bg-red-950/30" : "bg-blue-50 dark:bg-blue-950/30")}>
+          <Wallet className={cn("w-6 h-6 mx-auto mb-2", isOverBudget ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400")} />
+          <div className={cn("text-xl font-bold", isOverBudget ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400")}>
             {formatCurrency(netCost)}
           </div>
           <div className="text-xs text-muted-foreground">Net Cost</div>

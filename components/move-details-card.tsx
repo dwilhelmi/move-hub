@@ -87,7 +87,7 @@ export function MoveDetailsCard({ moveDetails, isLoading = false, onEdit }: Move
 
   return (
     <Card className="mb-6 overflow-hidden">
-      <div className="bg-slate-50 p-6 border-b-2 border-border">
+      <div className="bg-muted p-6 border-b-2 border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
@@ -95,7 +95,7 @@ export function MoveDetailsCard({ moveDetails, isLoading = false, onEdit }: Move
             </div>
             <CardTitle className="text-2xl font-bold">Move Details</CardTitle>
           </div>
-          <Button variant="ghost" size="icon" onClick={onEdit} className="p-2 hover:bg-white rounded-lg">
+          <Button variant="ghost" size="icon" onClick={onEdit} className="p-2 hover:bg-accent rounded-lg">
             <Edit className="w-5 h-5 text-foreground/70" />
           </Button>
         </div>

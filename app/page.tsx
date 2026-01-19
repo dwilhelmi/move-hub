@@ -171,7 +171,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
             onClick={() => setShowTaskForm(true)}
-            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+            className="flex items-center gap-3 p-4 bg-muted hover:bg-accent rounded-xl border-2 border-border hover:border-primary transition-all"
           >
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
               <Plus className="w-5 h-5 text-primary-foreground" />
@@ -180,7 +180,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setShowExpenseForm(true)}
-            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+            className="flex items-center gap-3 p-4 bg-muted hover:bg-accent rounded-xl border-2 border-border hover:border-primary transition-all"
           >
             <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-white" />
@@ -189,7 +189,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setShowEventForm(true)}
-            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+            className="flex items-center gap-3 p-4 bg-muted hover:bg-accent rounded-xl border-2 border-border hover:border-primary transition-all"
           >
             <div className="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
               <Calendar className="w-5 h-5 text-white" />
@@ -198,7 +198,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setShowInventoryForm(true)}
-            className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 rounded-xl border-2 border-slate-200 hover:border-primary transition-all"
+            className="flex items-center gap-3 p-4 bg-muted hover:bg-accent rounded-xl border-2 border-border hover:border-primary transition-all"
           >
             <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
               <Package className="w-5 h-5 text-white" />
