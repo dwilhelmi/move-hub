@@ -6,10 +6,10 @@ This file provides comprehensive guidance for AI assistants working with this co
 
 This project's documentation is organized into focused files:
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture, data flow, authentication, database schema, and layout structure
-- **[COMPONENTS.md](./COMPONENTS.md)** - Component structure and code patterns
-- **[DESIGN.md](./DESIGN.md)** - Styling system and design patterns
-- **[CONFIG.md](./CONFIG.md)** - Configuration, commands, and environment setup
+- @./ARCHITECTURE.md - System architecture, data flow, authentication, database schema, and layout structure
+- @./COMPONENTS.md - Component structure and code patterns
+- @./DESIGN.md - Styling system and design patterns
+- @./CONFIG.md - Configuration, commands, and environment setup
 
 Please read these files for detailed information about the codebase.
 
