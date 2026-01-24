@@ -11,7 +11,7 @@ const publicRoutes = ["/login", "/signup", "/auth/callback"]
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-  const { user, isLoading } = useAuth()
+  const { user, isLoading, isGuest } = useAuth()
   const pathname = usePathname()
 
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
@@ -30,11 +30,8 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
     )
   }
 
-  // If not logged in and not on public route, middleware will redirect
-  // But render nothing here as a fallback
-  if (!user) {
-    return null
-  }
+  // Guest mode is allowed - render layout for both authenticated users and guests
+  // (No longer block rendering when !user since guests are supported)
 
   return (
     <div className="flex h-screen overflow-hidden">

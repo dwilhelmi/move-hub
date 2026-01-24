@@ -31,9 +31,12 @@ import { MoveDetailsForm } from "@/components/move-details-form"
 import { HomeSkeleton } from "@/components/home-skeleton"
 
 export default function Home() {
+  console.log("[HomePage] Rendering")
   const { hub, isLoading: isHubLoading } = useHub()
+  console.log("[HomePage] hub:", hub?.name || "no hub", "isHubLoading:", isHubLoading)
   const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
   const [isLoadingMoveDetails, setIsLoadingMoveDetails] = useState(true)
+  console.log("[HomePage] isLoadingMoveDetails:", isLoadingMoveDetails)
   const [tasksCompleted, setTasksCompleted] = useState(0)
   const [totalTasks, setTotalTasks] = useState(0)
   const [showMoveDetailsForm, setShowMoveDetailsForm] = useState(false)
@@ -43,8 +46,14 @@ export default function Home() {
   const [showInventoryForm, setShowInventoryForm] = useState(false)
 
   const loadData = useCallback(async () => {
-    if (!hub) return
+    console.log("[HomePage] loadData called - hub:", hub?.name || "no hub")
+    if (!hub) {
+      // No hub - stop loading so HubSetup can show
+      setIsLoadingMoveDetails(false)
+      return
+    }
 
+    console.log("[HomePage] Loading move details...")
     setIsLoadingMoveDetails(true)
     const [details, tasks] = await Promise.all([
       getMoveDetails(hub.id),
@@ -55,6 +64,7 @@ export default function Home() {
     const completed = tasks.filter((task) => task.status === "completed").length
     setTasksCompleted(completed)
     setTotalTasks(tasks.length)
+    console.log("[HomePage] Move details loaded, setting isLoadingMoveDetails to false")
     setIsLoadingMoveDetails(false)
   }, [hub])
 
@@ -99,13 +109,17 @@ export default function Home() {
 
   // Show skeleton while hub is loading or while initial data loads
   if (isHubLoading || isLoadingMoveDetails) {
+    console.log("[HomePage] Rendering HomeSkeleton - isHubLoading:", isHubLoading, "isLoadingMoveDetails:", isLoadingMoveDetails)
     return <HomeSkeleton />
   }
 
   // Show hub setup if no hub (after loading completes)
   if (!hub) {
+    console.log("[HomePage] Rendering HubSetup - no hub")
     return <HubSetup />
   }
+
+  console.log("[HomePage] Rendering main content")
 
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl md:pt-8">
