@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { Sidebar } from "@/components/sidebar"
 import { MobileSidebar } from "@/components/mobile-sidebar"
 import { MobileHeader } from "@/components/mobile-header"
+import { GuestSavePrompt } from "@/components/guest-save-prompt"
 import { useAuth } from "@/components/providers/auth-provider"
 
 const publicRoutes = ["/login", "/signup", "/auth/callback"]
@@ -35,6 +36,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <GuestSavePrompt />
       <Sidebar />
       <MobileSidebar
         open={mobileSidebarOpen}

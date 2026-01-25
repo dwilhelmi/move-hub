@@ -61,6 +61,24 @@ export class LocalStorageDataProvider implements DataProvider {
     }
   }
 
+  /**
+   * Track activity for guest save prompt
+   * Increments counter when guests create new items
+   */
+  private trackActivity(): void {
+    if (!this.isClient()) return
+
+    try {
+      const key = "move-hub-guest-activity-count"
+      const currentCount = localStorage.getItem(key)
+      const count = currentCount ? parseInt(currentCount, 10) : 0
+      localStorage.setItem(key, (count + 1).toString())
+    } catch (error) {
+      // Silent fail - activity tracking shouldn't break functionality
+      console.error("Error tracking guest activity:", error)
+    }
+  }
+
   // Move Details
   async getMoveDetails(hubId: string): Promise<MoveDetails | null> {
     const key = getStorageKey(hubId, "move-details")
@@ -96,6 +114,7 @@ export class LocalStorageDataProvider implements DataProvider {
     }
     const key = getStorageKey(hubId, "tasks")
     this.saveToStorage(key, [...tasks, newTask])
+    this.trackActivity() // Track guest activity
     return Promise.resolve(newTask)
   }
 
@@ -157,6 +176,7 @@ export class LocalStorageDataProvider implements DataProvider {
     }
     const key = getStorageKey(hubId, "expenses")
     this.saveToStorage(key, [...expenses, newExpense])
+    this.trackActivity() // Track guest activity
     return Promise.resolve(newExpense)
   }
 
@@ -213,6 +233,7 @@ export class LocalStorageDataProvider implements DataProvider {
     }
     const key = getStorageKey(hubId, "timeline-events")
     this.saveToStorage(key, [...events, newEvent])
+    this.trackActivity() // Track guest activity
     return Promise.resolve(newEvent)
   }
 
@@ -265,6 +286,7 @@ export class LocalStorageDataProvider implements DataProvider {
     }
     const key = getStorageKey(hubId, "inventory-items")
     this.saveToStorage(key, [...items, newItem])
+    this.trackActivity() // Track guest activity
     return Promise.resolve(newItem)
   }
 
