@@ -11,7 +11,7 @@ import { Settings, Users, UserPlus, Trash2, Crown, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function SettingsPage() {
-  const { user, signOut } = useAuth()
+  const { user, isGuest, signOut } = useAuth()
   const { hub, isLoading, isOwner, updateHubName, inviteMember, removeMember } = useHub()
   const [hubName, setHubName] = useState("")
   const [inviteEmail, setInviteEmail] = useState("")
@@ -134,7 +134,7 @@ export default function SettingsPage() {
         )}
 
         {/* Members */}
-        {hub && (
+        {hub && !isGuest && (
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -232,6 +232,31 @@ export default function SettingsPage() {
                 </form>
               </div>
             )}
+          </Card>
+        )}
+
+        {/* Guest Mode Collaboration Message */}
+        {hub && isGuest && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="w-5 h-5" />
+              <h2 className="text-xl font-bold">Collaboration</h2>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
+              <Users className="w-12 h-12 mx-auto mb-4 text-blue-600 dark:text-blue-400" />
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                Sign up to collaborate with others
+              </h3>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">
+                Guest mode only supports solo planning. Create an account to invite family members or roommates to collaborate on your move.
+              </p>
+              <Button
+                onClick={() => router.push("/signup")}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Sign Up Now
+              </Button>
+            </div>
           </Card>
         )}
       </div>
