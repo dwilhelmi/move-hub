@@ -28,7 +28,14 @@ export interface Database {
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hubs_created_by_fkey"
+            columns: ["created_by"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       hub_members: {
         Row: {
@@ -52,7 +59,20 @@ export interface Database {
           role?: "owner" | "member"
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hub_members_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hub_members_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       hub_invites: {
         Row: {
@@ -76,7 +96,20 @@ export interface Database {
           invited_by?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hub_invites_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hub_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       move_details: {
         Row: {
@@ -109,7 +142,14 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "move_details_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       tasks: {
         Row: {
@@ -151,7 +191,14 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       expenses: {
         Row: {
@@ -184,7 +231,14 @@ export interface Database {
           notes?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       timeline_events: {
         Row: {
@@ -214,7 +268,14 @@ export interface Database {
           notes?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "timeline_events_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       inventory_items: {
         Row: {
@@ -259,7 +320,14 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       budgets: {
         Row: {
@@ -286,7 +354,14 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "budgets_hub_id_fkey"
+            columns: ["hub_id"]
+            referencedRelation: "hubs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       profiles: {
         Row: {

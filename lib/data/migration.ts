@@ -103,9 +103,8 @@ async function migrateTasks(
         priority: task.priority,
         category: task.category,
         description: task.description,
-        notes: task.notes,
-        estimatedCost: task.estimatedCost,
-        actualCost: task.actualCost,
+        dueDate: task.dueDate,
+        cost: task.cost,
       })
     )
   )
@@ -127,13 +126,11 @@ async function migrateExpenses(
   await Promise.all(
     expenses.map((expense: any) =>
       provider.addExpense(newHubId, {
-        title: expense.title,
+        description: expense.description,
         amount: expense.amount,
         category: expense.category,
         date: expense.date,
         notes: expense.notes,
-        paymentMethod: expense.paymentMethod,
-        vendor: expense.vendor,
       })
     )
   )
@@ -157,9 +154,9 @@ async function migrateTimelineEvents(
       provider.addTimelineEvent(newHubId, {
         title: event.title,
         date: event.date,
-        category: event.category,
+        type: event.type,
         description: event.description,
-        isCompleted: event.isCompleted,
+        notes: event.notes,
       })
     )
   )
@@ -182,13 +179,13 @@ async function migrateInventoryItems(
     items.map((item: any) =>
       provider.addInventoryItem(newHubId, {
         name: item.name,
-        category: item.category,
         room: item.room,
-        quantity: item.quantity,
-        estimatedValue: item.estimatedValue,
+        disposition: item.disposition || "keep",
+        box: item.box,
+        value: item.value,
         notes: item.notes,
-        status: item.status,
-        fragile: item.fragile,
+        sold: item.sold,
+        soldAmount: item.soldAmount,
       })
     )
   )
@@ -209,7 +206,7 @@ async function migrateBudget(
   const budget = JSON.parse(budgetJson)
   await provider.saveBudget(newHubId, {
     totalBudget: budget.totalBudget,
-    categories: budget.categories,
+    categoryBudgets: budget.categoryBudgets,
   })
 }
 
@@ -228,10 +225,9 @@ async function migrateMoveDetails(
   const details = JSON.parse(detailsJson)
   await provider.saveMoveDetails(newHubId, {
     moveDate: details.moveDate,
-    fromAddress: details.fromAddress,
-    toAddress: details.toAddress,
-    movingCompany: details.movingCompany,
-    notes: details.notes,
+    currentAddress: details.currentAddress,
+    newAddress: details.newAddress,
+    createdDate: details.createdDate,
   })
 }
 

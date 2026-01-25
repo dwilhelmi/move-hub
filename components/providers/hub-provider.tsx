@@ -154,10 +154,11 @@ export function HubProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
       members: [
         {
+          id: crypto.randomUUID(),
           hub_id: "", // Will be set below
           user_id: guestId,
           role: "owner",
-          joined_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
           profile: null,
         },
       ],

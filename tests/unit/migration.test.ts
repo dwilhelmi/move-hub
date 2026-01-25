@@ -91,7 +91,7 @@ describe("Migration", () => {
       mockLocalStorage[`move-hub-${guestHubId}-expenses`] = JSON.stringify([
         {
           id: "expense-1",
-          title: "Moving truck",
+          description: "Moving truck",
           amount: 500,
           category: "transportation",
           date: "2024-01-15",
@@ -114,20 +114,17 @@ describe("Migration", () => {
         priority: "high",
         category: "packing",
         description: undefined,
-        notes: undefined,
-        estimatedCost: undefined,
-        actualCost: undefined,
+        dueDate: undefined,
+        cost: undefined,
       })
 
       // Should migrate expenses
       expect(mockProvider.addExpense).toHaveBeenCalledWith("new-hub-id", {
-        title: "Moving truck",
+        description: "Moving truck",
         amount: 500,
         category: "transportation",
         date: "2024-01-15",
         notes: undefined,
-        paymentMethod: undefined,
-        vendor: undefined,
       })
 
       // Should clear guest data
@@ -153,8 +150,7 @@ describe("Migration", () => {
           id: "event-1",
           title: "Moving day",
           date: "2024-02-01",
-          category: "logistics",
-          isCompleted: false,
+          type: "logistics",
         },
       ])
 
@@ -163,9 +159,9 @@ describe("Migration", () => {
       expect(mockProvider.addTimelineEvent).toHaveBeenCalledWith("new-hub-id", {
         title: "Moving day",
         date: "2024-02-01",
-        category: "logistics",
+        type: "logistics",
         description: undefined,
-        isCompleted: false,
+        notes: undefined,
       })
 
       expect(result.success).toBe(true)
@@ -184,11 +180,9 @@ describe("Migration", () => {
         {
           id: "item-1",
           name: "Sofa",
-          category: "furniture",
           room: "living-room",
-          quantity: 1,
-          estimatedValue: 1000,
-          fragile: false,
+          disposition: "keep",
+          value: 1000,
         },
       ])
 
@@ -196,13 +190,13 @@ describe("Migration", () => {
 
       expect(mockProvider.addInventoryItem).toHaveBeenCalledWith("new-hub-id", {
         name: "Sofa",
-        category: "furniture",
         room: "living-room",
-        quantity: 1,
-        estimatedValue: 1000,
+        disposition: "keep",
+        box: undefined,
+        value: 1000,
         notes: undefined,
-        status: undefined,
-        fragile: false,
+        sold: undefined,
+        soldAmount: undefined,
       })
 
       expect(result.success).toBe(true)
@@ -219,14 +213,14 @@ describe("Migration", () => {
 
       mockLocalStorage[`move-hub-${guestHubId}-budget`] = JSON.stringify({
         totalBudget: 5000,
-        categories: { transportation: 2000, packing: 1000 },
+        categoryBudgets: { transportation: 2000, packing: 1000 },
       })
 
       const result = await migrateGuestDataToDatabase(guestId, "user-123", mockProvider)
 
       expect(mockProvider.saveBudget).toHaveBeenCalledWith("new-hub-id", {
         totalBudget: 5000,
-        categories: { transportation: 2000, packing: 1000 },
+        categoryBudgets: { transportation: 2000, packing: 1000 },
       })
 
       expect(result.success).toBe(true)
@@ -243,20 +237,18 @@ describe("Migration", () => {
 
       mockLocalStorage[`move-hub-${guestHubId}-move_details`] = JSON.stringify({
         moveDate: "2024-02-15",
-        fromAddress: "123 Old St",
-        toAddress: "456 New Ave",
-        movingCompany: "Swift Movers",
-        notes: "Handle with care",
+        currentAddress: "123 Old St",
+        newAddress: "456 New Ave",
+        createdDate: "2024-01-01",
       })
 
       const result = await migrateGuestDataToDatabase(guestId, "user-123", mockProvider)
 
       expect(mockProvider.saveMoveDetails).toHaveBeenCalledWith("new-hub-id", {
         moveDate: "2024-02-15",
-        fromAddress: "123 Old St",
-        toAddress: "456 New Ave",
-        movingCompany: "Swift Movers",
-        notes: "Handle with care",
+        currentAddress: "123 Old St",
+        newAddress: "456 New Ave",
+        createdDate: "2024-01-01",
       })
 
       expect(result.success).toBe(true)
