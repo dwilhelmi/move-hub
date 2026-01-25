@@ -60,6 +60,11 @@ export default function SignupPage() {
 
       // If email confirmation is required
       if (data.user && !data.session) {
+        // Store guest ID in localStorage with a pending migration flag
+        // This will be picked up after email confirmation
+        if (guestId) {
+          localStorage.setItem("move-hub-pending-migration-user-id", data.user.id)
+        }
         router.push("/login?message=Check your email to confirm your account")
         return
       }

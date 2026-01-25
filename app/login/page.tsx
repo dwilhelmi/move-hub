@@ -24,7 +24,7 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -32,6 +32,12 @@ export default function LoginPage() {
       if (error) {
         setError(error.message)
         return
+      }
+
+      // If there's guest data, mark it for migration
+      const guestId = localStorage.getItem("move-hub-guest-id")
+      if (guestId && data.user) {
+        localStorage.setItem("move-hub-pending-migration-user-id", data.user.id)
       }
 
       router.push("/")
