@@ -20,7 +20,8 @@ components/
 │   └── theme-toggle.tsx
 │
 ├── providers/             # React context providers
-│   ├── auth-provider.tsx  # Authentication state management
+│   ├── auth-provider.tsx  # Authentication state and guest management
+│   ├── data-provider-provider.tsx  # Data access abstraction
 │   └── hub-provider.tsx   # Hub/multi-tenancy state management
 │
 ├── house-prep/            # House preparation feature components
@@ -60,8 +61,9 @@ components/
     ├── move-details-card.tsx  # Move details display card
     ├── moving-countdown.tsx   # Countdown timer display
     ├── hub-setup.tsx          # Initial hub creation flow
+    ├── guest-save-prompt.tsx  # Guest signup prompt modal
     ├── sidebar.tsx            # Desktop sidebar (hidden on mobile)
-    ├── sidebar-content.tsx    # Shared sidebar content
+    ├── sidebar-content.tsx    # Shared sidebar content (with guest indicator)
     ├── mobile-sidebar.tsx     # Mobile drawer sidebar
     ├── mobile-header.tsx      # Mobile header bar
     └── mobile-menu-button.tsx # Hamburger menu button
@@ -71,18 +73,35 @@ components/
 
 ### AuthProvider
 
-Manages user authentication state via Supabase Auth.
+Manages user authentication state and guest mode via Supabase Auth.
 
 ```typescript
 interface AuthContextType {
-  user: User | null           // Current Supabase user object
-  session: Session | null     // Current auth session
+  user: User | null           // Current Supabase user object (null for guests)
+  session: Session | null     // Current auth session (null for guests)
   isLoading: boolean          // True while checking initial auth state
-  signOut: () => Promise<void> // Sign out the current user
+  isGuest: boolean            // True if user is in guest mode
+  guestId: string | null      // UUID for guest users
+  signOut: () => Promise<void> // Sign out (clears guest data too)
 }
 
 // Usage
-const { user, session, isLoading, signOut } = useAuth()
+const { user, session, isLoading, isGuest, guestId, signOut } = useAuth()
+```
+
+### DataProviderProvider
+
+Provides data access abstraction that switches between database and localStorage.
+
+```typescript
+// Usage
+const provider = useDataProvider()
+
+// All data operations use the same API regardless of storage mode
+const tasks = await provider.getTasks(hubId)
+await provider.addTask(hubId, taskData)
+await provider.updateTask(taskId, updates)
+await provider.deleteTask(taskId)
 ```
 
 ### HubProvider
@@ -184,24 +203,28 @@ Feature-specific forms (like `budget-settings-form.tsx`) that are only used with
 
 ### Data Access
 
-All database operations go through `lib/supabase/database.ts`:
+All data operations use the DataProvider abstraction via `useDataProvider()` hook:
 
 ```typescript
-import {
-  getTasks,
-  addTask,
-  updateTask,
-  deleteTask,
-  Task,
-  TaskStatus,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { Task, TaskStatus } from "@/lib/supabase/database"
 
-// Always pass hub.id for multi-tenancy
-const tasks = await getTasks(hub.id)
-const newTask = await addTask(hub.id, taskData)
-await updateTask(taskId, updates)
-await deleteTask(taskId)
+export default function FeaturePage() {
+  const { hub } = useHub()
+  const provider = useDataProvider()
+
+  // Provider automatically uses database or localStorage based on auth state
+  const tasks = await provider.getTasks(hub.id)
+  const newTask = await provider.addTask(hub.id, taskData)
+  await provider.updateTask(taskId, updates)
+  await provider.deleteTask(taskId)
+}
 ```
+
+**Important**:
+- Never import database functions directly in pages/components
+- Always use `useDataProvider()` hook for data access
+- This ensures guest mode works seamlessly
 
 ### Type Imports
 
