@@ -28,6 +28,7 @@ export interface Database {
           created_at?: string
           created_by?: string
         }
+        Relationships: []
       }
       hub_members: {
         Row: {
@@ -51,6 +52,7 @@ export interface Database {
           role?: "owner" | "member"
           created_at?: string
         }
+        Relationships: []
       }
       hub_invites: {
         Row: {
@@ -74,6 +76,7 @@ export interface Database {
           invited_by?: string
           created_at?: string
         }
+        Relationships: []
       }
       move_details: {
         Row: {
@@ -106,6 +109,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       tasks: {
         Row: {
@@ -147,6 +151,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       expenses: {
         Row: {
@@ -179,6 +184,7 @@ export interface Database {
           notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       timeline_events: {
         Row: {
@@ -208,6 +214,7 @@ export interface Database {
           notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       inventory_items: {
         Row: {
@@ -252,6 +259,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       budgets: {
         Row: {
@@ -278,6 +286,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -298,6 +307,7 @@ export interface Database {
           display_name?: string | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
