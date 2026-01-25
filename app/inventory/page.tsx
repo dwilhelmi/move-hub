@@ -4,13 +4,8 @@ import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { useHub } from "@/components/providers/hub-provider"
 import { HubSetup } from "@/components/hub-setup"
-import {
-  getInventoryItems,
-  addInventoryItem as dbAddInventoryItem,
-  updateInventoryItem as dbUpdateInventoryItem,
-  deleteInventoryItem as dbDeleteInventoryItem,
-  InventoryItem,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { InventoryItem } from "@/lib/supabase/database"
 import { InventoryStats } from "@/components/inventory/inventory-stats"
 import { InventoryList } from "@/components/inventory/inventory-list"
 import { InventoryItemForm } from "@/components/inventory-item-form"
@@ -18,6 +13,7 @@ import { DeleteConfirmDialog } from "@/components/move-prep/delete-confirm-dialo
 
 export default function InventoryPage() {
   const { hub, isLoading: isHubLoading } = useHub()
+  const provider = useDataProvider()
   const [items, setItems] = useState<InventoryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
@@ -28,10 +24,10 @@ export default function InventoryPage() {
     if (!hub) return
 
     setIsLoading(true)
-    const storedItems = await getInventoryItems(hub.id)
+    const storedItems = await provider.getInventoryItems(hub.id)
     setItems(storedItems)
     setIsLoading(false)
-  }, [hub])
+  }, [hub, provider])
 
   useEffect(() => {
     loadData()
@@ -41,10 +37,10 @@ export default function InventoryPage() {
     if (!hub) return
 
     if ("id" in itemData && itemData.id) {
-      await dbUpdateInventoryItem(itemData.id, itemData)
+      await provider.updateInventoryItem(itemData.id, itemData)
       setItems(items.map((i) => (i.id === itemData.id ? { ...i, ...itemData } : i)))
     } else {
-      const newItem = await dbAddInventoryItem(hub.id, itemData as Omit<InventoryItem, "id">)
+      const newItem = await provider.addInventoryItem(hub.id, itemData as Omit<InventoryItem, "id">)
       if (newItem) {
         setItems([...items, newItem])
       }
@@ -54,7 +50,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteItem = async (id: string) => {
-    await dbDeleteInventoryItem(id)
+    await provider.deleteInventoryItem(id)
     setItems(items.filter((i) => i.id !== id))
     setDeleteConfirm(null)
   }
