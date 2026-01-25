@@ -14,6 +14,7 @@ const publicRoutes = ["/login", "/signup", "/auth/callback"]
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [isMigrating, setIsMigrating] = useState(false)
   const { user, isLoading, isGuest, guestId } = useAuth()
   const pathname = usePathname()
   const provider = useDataProvider()
@@ -24,7 +25,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkPendingMigration = async () => {
       // Only check if user is authenticated and not a guest
-      if (!user || isGuest || isLoading) return
+      if (!user || isGuest || isLoading || isMigrating) return
 
       // Check for pending migration flag
       const pendingUserId = localStorage.getItem("move-hub-pending-migration-user-id")
@@ -38,6 +39,18 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
         return
       }
 
+      // Check for migration in progress flag to prevent duplicate migrations
+      const migrationInProgress = sessionStorage.getItem("move-hub-migration-in-progress")
+      if (migrationInProgress === "true") {
+        console.log("Migration already in progress, skipping")
+        return
+      }
+
+      // Set flags IMMEDIATELY to prevent concurrent migrations
+      setIsMigrating(true)
+      sessionStorage.setItem("move-hub-migration-in-progress", "true")
+      localStorage.removeItem("move-hub-pending-migration-user-id")
+
       // Perform migration
       console.log("Performing delayed guest data migration after email confirmation")
       const result = await migrateGuestDataToDatabase(
@@ -48,29 +61,36 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
 
       if (result.success) {
         console.log("Migration successful:", result.newHubId)
-        // Clear pending migration flag
-        localStorage.removeItem("move-hub-pending-migration-user-id")
+        // Clear the in-progress flag
+        sessionStorage.removeItem("move-hub-migration-in-progress")
         // Force a page refresh to load the new hub
         window.location.reload()
       } else {
         console.error("Migration failed:", result.error)
-        // Keep the pending flag so we can retry
+        // Clear flags and restore pending migration flag so we can retry
+        sessionStorage.removeItem("move-hub-migration-in-progress")
+        localStorage.setItem("move-hub-pending-migration-user-id", user.id)
+        setIsMigrating(false)
       }
     }
 
     checkPendingMigration()
-  }, [user, isGuest, isLoading, provider])
+  }, [user, isGuest, isLoading, provider, isMigrating])
 
   // For public routes (login, signup), render without sidebar
   if (isPublicRoute) {
     return <>{children}</>
   }
 
-  // Show loading state while checking auth
-  if (isLoading) {
+  // Show loading state while checking auth or migrating guest data
+  if (isLoading || isMigrating) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-center">
+          <div className="text-muted-foreground">
+            {isMigrating ? "Saving your guest data..." : "Loading..."}
+          </div>
+        </div>
       </div>
     )
   }
