@@ -160,8 +160,7 @@ describe("Migration", () => {
         title: "Moving day",
         date: "2024-02-01",
         type: "logistics",
-        description: undefined,
-        notes: undefined,
+        notes: null,
       })
 
       expect(result.success).toBe(true)

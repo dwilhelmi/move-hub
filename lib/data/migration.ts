@@ -60,7 +60,8 @@ export async function migrateGuestDataToDatabase(
     const newHubId = newHub.id
 
     // 3. Migrate all data types from localStorage to database
-    await Promise.all([
+    // Run migrations with error handling for each type
+    const migrationResults = await Promise.allSettled([
       migrateTasks(guestHubId, newHubId, provider),
       migrateExpenses(guestHubId, newHubId, provider),
       migrateTimelineEvents(guestHubId, newHubId, provider),
@@ -68,6 +69,26 @@ export async function migrateGuestDataToDatabase(
       migrateBudget(guestHubId, newHubId, provider),
       migrateMoveDetails(guestHubId, newHubId, provider),
     ])
+
+    // Log any migration failures
+    const migrationTypes = [
+      "tasks",
+      "expenses",
+      "timeline events",
+      "inventory items",
+      "budget",
+      "move details",
+    ]
+    migrationResults.forEach((result, index) => {
+      if (result.status === "rejected") {
+        console.error(
+          `Failed to migrate ${migrationTypes[index]}:`,
+          result.reason
+        )
+      } else {
+        console.log(`Successfully migrated ${migrationTypes[index]}`)
+      }
+    })
 
     // 4. Clear all guest data from localStorage
     clearGuestData(guestId)
@@ -155,8 +176,8 @@ async function migrateTimelineEvents(
         title: event.title,
         date: event.date,
         type: event.type,
-        description: event.description,
-        notes: event.notes,
+        // Use notes field (description is just for display compatibility)
+        notes: event.notes || event.description || null,
       })
     )
   )
