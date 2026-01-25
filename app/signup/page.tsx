@@ -4,11 +4,14 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
+import { useAuth } from "@/components/providers/auth-provider"
+import { useDataProvider } from "@/lib/data/hooks"
+import { migrateGuestDataToDatabase } from "@/lib/data/migration"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Package } from "lucide-react"
+import { Package, Loader2 } from "lucide-react"
 
 export default function SignupPage() {
   const [email, setEmail] = useState("")
@@ -17,8 +20,11 @@ export default function SignupPage() {
   const [displayName, setDisplayName] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isMigrating, setIsMigrating] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { guestId } = useAuth()
+  const provider = useDataProvider()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,7 +64,24 @@ export default function SignupPage() {
         return
       }
 
-      // If auto-confirmed, redirect to home
+      // If auto-confirmed and we have guest data, migrate it
+      if (data.user && data.session && guestId) {
+        setIsMigrating(true)
+        const migrationResult = await migrateGuestDataToDatabase(
+          guestId,
+          data.user.id,
+          provider
+        )
+
+        if (!migrationResult.success) {
+          console.error("Migration failed:", migrationResult.error)
+          // Don't block signup - just log the error
+          // Guest data remains in localStorage and user can still use the app
+        }
+        setIsMigrating(false)
+      }
+
+      // Redirect to home
       router.push("/")
       router.refresh()
     } catch {
@@ -131,8 +154,14 @@ export default function SignupPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create account"}
+            {isMigrating && (
+              <div className="p-3 text-sm bg-blue-50 dark:bg-blue-950/30 rounded-lg flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving your guest data...</span>
+              </div>
+            )}
+            <Button type="submit" className="w-full" disabled={isLoading || isMigrating}>
+              {isLoading ? "Creating account..." : isMigrating ? "Migrating data..." : "Create account"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
               Already have an account?{" "}

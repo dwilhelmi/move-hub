@@ -42,25 +42,21 @@ export function HubProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
 
   const fetchHub = useCallback(async () => {
-    console.log("[HubProvider] fetchHub called - isGuest:", isGuest, "guestId:", guestId, "user:", user?.email)
     // Guest mode: load hub from localStorage
     if (isGuest && guestId) {
       const storedHub = typeof window !== "undefined"
         ? localStorage.getItem(`move-hub-guest-hub-${guestId}`)
         : null
 
-      console.log("[HubProvider] Guest mode - storedHub:", !!storedHub)
       if (storedHub) {
         try {
           const parsedHub = JSON.parse(storedHub)
           setHub(parsedHub)
-          console.log("[HubProvider] Loaded guest hub:", parsedHub.name)
         } catch (error) {
           console.error("Error parsing guest hub:", error)
           setHub(null)
         }
       } else {
-        console.log("[HubProvider] No guest hub found")
         setHub(null)
       }
       setIsLoading(false)
@@ -69,7 +65,6 @@ export function HubProvider({ children }: { children: React.ReactNode }) {
 
     // Not logged in and not guest
     if (!user) {
-      console.log("[HubProvider] No user and not guest - setting hub to null")
       setHub(null)
       setIsLoading(false)
       return

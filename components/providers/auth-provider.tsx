@@ -36,11 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      console.log("[AuthProvider] Getting initial session")
       const {
         data: { session },
       } = await supabase.auth.getSession()
-      console.log("[AuthProvider] Session:", session?.user?.email || "no user")
       setSession(session)
       setUser(session?.user ?? null)
 
@@ -51,11 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ? localStorage.getItem("move-hub-guest-id")
           : null
 
-        console.log("[AuthProvider] No user, hasExplicitlySignedOut:", hasExplicitlySignedOut.current, "storedGuestId:", storedGuestId)
-
         if (storedGuestId) {
           setGuestId(storedGuestId)
-          console.log("[AuthProvider] Loaded guest ID:", storedGuestId)
         } else {
           // Auto-start guest session for new users
           const newGuestId = crypto.randomUUID()
@@ -63,13 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem("move-hub-guest-id", newGuestId)
           }
           setGuestId(newGuestId)
-          console.log("[AuthProvider] Created new guest ID:", newGuestId)
         }
-      } else {
-        console.log("[AuthProvider] Not creating guest session - user:", !!session?.user, "hasExplicitlySignedOut:", hasExplicitlySignedOut.current)
       }
 
-      console.log("[AuthProvider] Setting isLoading to false")
       setIsLoading(false)
     }
 
@@ -79,7 +70,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-      console.log("[AuthProvider] Auth state change:", _event, "session:", session?.user?.email || "no user")
       setSession(session)
       setUser(session?.user ?? null)
 
