@@ -6,20 +6,8 @@ import Link from "next/link"
 import { Plus, DollarSign, Calendar, Package } from "lucide-react"
 import { useHub } from "@/components/providers/hub-provider"
 import { HubSetup } from "@/components/hub-setup"
-import {
-  getMoveDetails,
-  saveMoveDetails,
-  getTasks,
-  addTask as dbAddTask,
-  addExpense as dbAddExpense,
-  addTimelineEvent as dbAddTimelineEvent,
-  addInventoryItem as dbAddInventoryItem,
-  MoveDetails,
-  Task,
-  Expense,
-  TimelineEvent,
-  InventoryItem,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { MoveDetails, Task, Expense, TimelineEvent, InventoryItem } from "@/lib/supabase/database"
 import { TaskForm } from "@/components/task-form"
 import { ExpenseForm } from "@/components/expense-form"
 import { TimelineEventForm } from "@/components/timeline-event-form"
@@ -32,6 +20,7 @@ import { HomeSkeleton } from "@/components/home-skeleton"
 
 export default function Home() {
   const { hub, isLoading: isHubLoading } = useHub()
+  const provider = useDataProvider()
   const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
   const [isLoadingMoveDetails, setIsLoadingMoveDetails] = useState(true)
   const [tasksCompleted, setTasksCompleted] = useState(0)
@@ -43,12 +32,16 @@ export default function Home() {
   const [showInventoryForm, setShowInventoryForm] = useState(false)
 
   const loadData = useCallback(async () => {
-    if (!hub) return
+    if (!hub) {
+      // No hub - stop loading so HubSetup can show
+      setIsLoadingMoveDetails(false)
+      return
+    }
 
     setIsLoadingMoveDetails(true)
     const [details, tasks] = await Promise.all([
-      getMoveDetails(hub.id),
-      getTasks(hub.id),
+      provider.getMoveDetails(hub.id),
+      provider.getTasks(hub.id),
     ])
 
     setMoveDetails(details)
@@ -56,7 +49,7 @@ export default function Home() {
     setTasksCompleted(completed)
     setTotalTasks(tasks.length)
     setIsLoadingMoveDetails(false)
-  }, [hub])
+  }, [hub, provider])
 
   useEffect(() => {
     loadData()
@@ -64,16 +57,16 @@ export default function Home() {
 
   const handleSaveMoveDetails = async (details: MoveDetails) => {
     if (!hub) return
-    await saveMoveDetails(hub.id, details)
+    await provider.saveMoveDetails(hub.id, details)
     setMoveDetails(details)
   }
 
   const handleSaveTask = async (taskData: Omit<Task, "id">) => {
     if (!hub) return
-    await dbAddTask(hub.id, taskData)
+    await provider.addTask(hub.id, taskData)
     setShowTaskForm(false)
     // Refresh task count
-    const tasks = await getTasks(hub.id)
+    const tasks = await provider.getTasks(hub.id)
     const completed = tasks.filter((task) => task.status === "completed").length
     setTasksCompleted(completed)
     setTotalTasks(tasks.length)
@@ -81,19 +74,19 @@ export default function Home() {
 
   const handleSaveExpense = async (expenseData: Omit<Expense, "id">) => {
     if (!hub) return
-    await dbAddExpense(hub.id, expenseData)
+    await provider.addExpense(hub.id, expenseData)
     setShowExpenseForm(false)
   }
 
   const handleSaveEvent = async (eventData: Omit<TimelineEvent, "id">) => {
     if (!hub) return
-    await dbAddTimelineEvent(hub.id, eventData)
+    await provider.addTimelineEvent(hub.id, eventData)
     setShowEventForm(false)
   }
 
   const handleSaveInventoryItem = async (itemData: Omit<InventoryItem, "id">) => {
     if (!hub) return
-    await dbAddInventoryItem(hub.id, itemData)
+    await provider.addInventoryItem(hub.id, itemData)
     setShowInventoryForm(false)
   }
 

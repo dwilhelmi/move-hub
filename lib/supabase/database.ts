@@ -1,6 +1,7 @@
 "use client"
 
-import { createClient } from "./client"
+import { SupabaseDataProvider } from "@/lib/data/supabase-provider"
+
 // Re-export types from the main types file for consistency
 export type {
   MoveDetails,
@@ -26,302 +27,112 @@ import type {
   Budget,
 } from "@/app/lib/types"
 
-// Import row converters from separate file (also used in tests)
-import {
-  rowToMoveDetails,
-  rowToTask,
-  rowToExpense,
-  rowToTimelineEvent,
-  rowToInventoryItem,
-  rowToBudget,
-} from "./row-converters"
+/**
+ * Backward Compatibility Layer
+ *
+ * This file now delegates all operations to SupabaseDataProvider.
+ * This allows existing code to continue working while we gradually migrate to useDataProvider().
+ *
+ * NEW CODE SHOULD USE useDataProvider() HOOK INSTEAD OF THESE FUNCTIONS.
+ */
 
-// Database operations
+// Create a singleton provider instance for backward compatibility
+const defaultProvider = new SupabaseDataProvider()
+
+// Move Details
 export async function getMoveDetails(hubId: string): Promise<MoveDetails | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("move_details")
-    .select("*")
-    .eq("hub_id", hubId)
-    .single()
-  return rowToMoveDetails(data)
+  return defaultProvider.getMoveDetails(hubId)
 }
 
 export async function saveMoveDetails(hubId: string, details: MoveDetails): Promise<void> {
-  const supabase = createClient()
-
-  const { data: existing } = await supabase
-    .from("move_details")
-    .select("id")
-    .eq("hub_id", hubId)
-    .single()
-
-  if (existing) {
-    await supabase
-      .from("move_details")
-      .update({
-        current_address: details.currentAddress || null,
-        new_address: details.newAddress || null,
-        move_date: details.moveDate || null,
-        created_date: details.createdDate || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("hub_id", hubId)
-  } else {
-    await supabase.from("move_details").insert({
-      hub_id: hubId,
-      current_address: details.currentAddress || null,
-      new_address: details.newAddress || null,
-      move_date: details.moveDate || null,
-      created_date: details.createdDate || null,
-    })
-  }
+  await defaultProvider.saveMoveDetails(hubId, details)
 }
 
 // Tasks
 export async function getTasks(hubId: string): Promise<Task[]> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("tasks")
-    .select("*")
-    .eq("hub_id", hubId)
-    .order("created_at", { ascending: true })
-  return (data || []).map(rowToTask)
+  return defaultProvider.getTasks(hubId)
 }
 
 export async function addTask(hubId: string, task: Omit<Task, "id">): Promise<Task | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("tasks")
-    .insert({
-      hub_id: hubId,
-      title: task.title,
-      description: task.description || null,
-      status: task.status,
-      priority: task.priority,
-      category: task.category || null,
-      due_date: task.dueDate || null,
-      cost: task.cost || null,
-    })
-    .select()
-    .single()
-  return data ? rowToTask(data) : null
+  return defaultProvider.addTask(hubId, task)
 }
 
 export async function updateTask(taskId: string, task: Partial<Task>): Promise<void> {
-  const supabase = createClient()
-  await supabase
-    .from("tasks")
-    .update({
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      category: task.category,
-      due_date: task.dueDate,
-      cost: task.cost,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", taskId)
+  return defaultProvider.updateTask(taskId, task)
 }
 
 export async function deleteTask(taskId: string): Promise<void> {
-  const supabase = createClient()
-  await supabase.from("tasks").delete().eq("id", taskId)
+  return defaultProvider.deleteTask(taskId)
 }
 
 // Expenses
 export async function getExpenses(hubId: string): Promise<Expense[]> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("expenses")
-    .select("*")
-    .eq("hub_id", hubId)
-    .order("date", { ascending: false })
-  return (data || []).map(rowToExpense)
+  return defaultProvider.getExpenses(hubId)
 }
 
 export async function addExpense(hubId: string, expense: Omit<Expense, "id">): Promise<Expense | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("expenses")
-    .insert({
-      hub_id: hubId,
-      description: expense.description,
-      amount: expense.amount,
-      category: expense.category,
-      date: expense.date,
-      notes: expense.notes || null,
-    })
-    .select()
-    .single()
-  return data ? rowToExpense(data) : null
+  return defaultProvider.addExpense(hubId, expense)
 }
 
 export async function updateExpense(expenseId: string, expense: Partial<Expense>): Promise<void> {
-  const supabase = createClient()
-  await supabase
-    .from("expenses")
-    .update({
-      description: expense.description,
-      amount: expense.amount,
-      category: expense.category,
-      date: expense.date,
-      notes: expense.notes,
-    })
-    .eq("id", expenseId)
+  return defaultProvider.updateExpense(expenseId, expense)
 }
 
 export async function deleteExpense(expenseId: string): Promise<void> {
-  const supabase = createClient()
-  await supabase.from("expenses").delete().eq("id", expenseId)
+  return defaultProvider.deleteExpense(expenseId)
 }
 
 // Timeline Events
 export async function getTimelineEvents(hubId: string): Promise<TimelineEvent[]> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("timeline_events")
-    .select("*")
-    .eq("hub_id", hubId)
-    .order("date", { ascending: true })
-  return (data || []).map(rowToTimelineEvent)
+  return defaultProvider.getTimelineEvents(hubId)
 }
 
 export async function addTimelineEvent(
   hubId: string,
   event: Omit<TimelineEvent, "id">
 ): Promise<TimelineEvent | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("timeline_events")
-    .insert({
-      hub_id: hubId,
-      title: event.title,
-      date: event.date,
-      type: event.type,
-      notes: event.notes || null,
-    })
-    .select()
-    .single()
-  return data ? rowToTimelineEvent(data) : null
+  return defaultProvider.addTimelineEvent(hubId, event)
 }
 
 export async function updateTimelineEvent(
   eventId: string,
   event: Partial<TimelineEvent>
 ): Promise<void> {
-  const supabase = createClient()
-  await supabase
-    .from("timeline_events")
-    .update({
-      title: event.title,
-      date: event.date,
-      type: event.type,
-      notes: event.notes,
-    })
-    .eq("id", eventId)
+  return defaultProvider.updateTimelineEvent(eventId, event)
 }
 
 export async function deleteTimelineEvent(eventId: string): Promise<void> {
-  const supabase = createClient()
-  await supabase.from("timeline_events").delete().eq("id", eventId)
+  return defaultProvider.deleteTimelineEvent(eventId)
 }
 
 // Inventory Items
 export async function getInventoryItems(hubId: string): Promise<InventoryItem[]> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("inventory_items")
-    .select("*")
-    .eq("hub_id", hubId)
-    .order("created_at", { ascending: true })
-  return (data || []).map(rowToInventoryItem)
+  return defaultProvider.getInventoryItems(hubId)
 }
 
 export async function addInventoryItem(
   hubId: string,
   item: Omit<InventoryItem, "id">
 ): Promise<InventoryItem | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("inventory_items")
-    .insert({
-      hub_id: hubId,
-      name: item.name,
-      room: item.room,
-      disposition: item.disposition,
-      box: item.box || null,
-      value: item.value || null,
-      notes: item.notes || null,
-      sold: item.sold || false,
-      sold_amount: item.soldAmount || null,
-    })
-    .select()
-    .single()
-  return data ? rowToInventoryItem(data) : null
+  return defaultProvider.addInventoryItem(hubId, item)
 }
 
 export async function updateInventoryItem(
   itemId: string,
   item: Partial<InventoryItem>
 ): Promise<void> {
-  const supabase = createClient()
-  await supabase
-    .from("inventory_items")
-    .update({
-      name: item.name,
-      room: item.room,
-      disposition: item.disposition,
-      box: item.box,
-      value: item.value,
-      notes: item.notes,
-      sold: item.sold,
-      sold_amount: item.soldAmount,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", itemId)
+  return defaultProvider.updateInventoryItem(itemId, item)
 }
 
 export async function deleteInventoryItem(itemId: string): Promise<void> {
-  const supabase = createClient()
-  await supabase.from("inventory_items").delete().eq("id", itemId)
+  return defaultProvider.deleteInventoryItem(itemId)
 }
 
 // Budget
 export async function getBudget(hubId: string): Promise<Budget | null> {
-  const supabase = createClient()
-  const { data } = await supabase
-    .from("budgets")
-    .select("*")
-    .eq("hub_id", hubId)
-    .single()
-  return rowToBudget(data)
+  return defaultProvider.getBudget(hubId)
 }
 
 export async function saveBudget(hubId: string, budget: Budget): Promise<void> {
-  const supabase = createClient()
-
-  const { data: existing } = await supabase
-    .from("budgets")
-    .select("id")
-    .eq("hub_id", hubId)
-    .single()
-
-  if (existing) {
-    await supabase
-      .from("budgets")
-      .update({
-        total_budget: budget.totalBudget,
-        category_budgets: budget.categoryBudgets || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("hub_id", hubId)
-  } else {
-    await supabase.from("budgets").insert({
-      hub_id: hubId,
-      total_budget: budget.totalBudget,
-      category_budgets: budget.categoryBudgets || null,
-    })
-  }
+  await defaultProvider.saveBudget(hubId, budget)
 }

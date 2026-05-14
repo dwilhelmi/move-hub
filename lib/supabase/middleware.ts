@@ -35,17 +35,15 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Define public routes that don't require authentication
+  // Guest users can access all app routes - they'll use localStorage instead of database
   const publicRoutes = ["/login", "/signup", "/auth/callback"]
   const isPublicRoute = publicRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   )
 
-  // Redirect to login if not authenticated and not on a public route
-  if (!user && !isPublicRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/login"
-    return NextResponse.redirect(url)
-  }
+  // Allow guest access to all routes (they'll use local storage)
+  // Authentication is optional, not required
+  // Note: No redirect to login for unauthenticated users
 
   // Redirect to home if authenticated and on login/signup page
   if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup")) {

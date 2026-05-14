@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/providers/auth-provider"
+import { DataProviderWrapper } from "@/components/providers/data-provider-wrapper"
 import { HubProvider } from "@/components/providers/hub-provider"
 import { LayoutClient } from "./layout-client"
 
@@ -31,9 +32,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <HubProvider>
-              <LayoutClient>{children}</LayoutClient>
-            </HubProvider>
+            <DataProviderWrapper>
+              <HubProvider>
+                <LayoutClient>{children}</LayoutClient>
+              </HubProvider>
+            </DataProviderWrapper>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -4,18 +4,8 @@ import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { useHub } from "@/components/providers/hub-provider"
 import { HubSetup } from "@/components/hub-setup"
-import {
-  getBudget,
-  saveBudget,
-  getExpenses,
-  addExpense as dbAddExpense,
-  getTasks,
-  getInventoryItems,
-  Budget,
-  Expense,
-  Task,
-  InventoryItem,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { Budget, Expense, Task, InventoryItem } from "@/lib/supabase/database"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { BudgetOverview } from "@/components/budget/budget-overview"
@@ -26,6 +16,7 @@ import { ExpenseForm } from "@/components/expense-form"
 
 export default function BudgetPage() {
   const { hub, isLoading: isHubLoading } = useHub()
+  const provider = useDataProvider()
   const [budget, setBudget] = useState<Budget | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
@@ -39,10 +30,10 @@ export default function BudgetPage() {
 
     setIsLoading(true)
     const [storedBudget, storedExpenses, storedTasks, storedItems] = await Promise.all([
-      getBudget(hub.id),
-      getExpenses(hub.id),
-      getTasks(hub.id),
-      getInventoryItems(hub.id),
+      provider.getBudget(hub.id),
+      provider.getExpenses(hub.id),
+      provider.getTasks(hub.id),
+      provider.getInventoryItems(hub.id),
     ])
 
     setBudget(storedBudget)
@@ -50,7 +41,7 @@ export default function BudgetPage() {
     setTasks(storedTasks)
     setInventoryItems(storedItems)
     setIsLoading(false)
-  }, [hub])
+  }, [hub, provider])
 
   useEffect(() => {
     loadData()
@@ -58,14 +49,14 @@ export default function BudgetPage() {
 
   const handleSaveBudget = async (newBudget: Budget) => {
     if (!hub) return
-    await saveBudget(hub.id, newBudget)
+    await provider.saveBudget(hub.id, newBudget)
     setBudget(newBudget)
     setShowSettingsForm(false)
   }
 
   const handleSaveExpense = async (expenseData: Omit<Expense, "id">) => {
     if (!hub) return
-    const newExpense = await dbAddExpense(hub.id, expenseData)
+    const newExpense = await provider.addExpense(hub.id, expenseData)
     if (newExpense) {
       setExpenses([...expenses, newExpense])
     }

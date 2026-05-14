@@ -5,18 +5,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useHub } from "@/components/providers/hub-provider"
 import { HubSetup } from "@/components/hub-setup"
-import {
-  getMoveDetails,
-  saveMoveDetails,
-  getTasks,
-  getTimelineEvents,
-  addTimelineEvent as dbAddTimelineEvent,
-  updateTimelineEvent as dbUpdateTimelineEvent,
-  deleteTimelineEvent as dbDeleteTimelineEvent,
-  MoveDetails,
-  Task,
-  TimelineEvent,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { MoveDetails, Task, TimelineEvent } from "@/lib/supabase/database"
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { TimelineEventForm } from "@/components/timeline-event-form"
@@ -28,6 +18,7 @@ import { dateToISO, isoToDate } from "@/lib/utils"
 
 export default function TimelinePage() {
   const { hub, isLoading: isHubLoading } = useHub()
+  const provider = useDataProvider()
   const [moveDetails, setMoveDetails] = useState<MoveDetails | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [customEvents, setCustomEvents] = useState<TimelineEvent[]>([])
@@ -43,16 +34,16 @@ export default function TimelinePage() {
 
     setIsLoading(true)
     const [details, taskList, events] = await Promise.all([
-      getMoveDetails(hub.id),
-      getTasks(hub.id),
-      getTimelineEvents(hub.id),
+      provider.getMoveDetails(hub.id),
+      provider.getTasks(hub.id),
+      provider.getTimelineEvents(hub.id),
     ])
 
     setMoveDetails(details)
     setTasks(taskList)
     setCustomEvents(events)
     setIsLoading(false)
-  }, [hub])
+  }, [hub, provider])
 
   useEffect(() => {
     loadData()
@@ -134,10 +125,10 @@ export default function TimelinePage() {
     if (!hub) return
 
     if ("id" in eventData && eventData.id) {
-      await dbUpdateTimelineEvent(eventData.id, eventData)
+      await provider.updateTimelineEvent(eventData.id, eventData)
       setCustomEvents(customEvents.map((e) => (e.id === eventData.id ? { ...e, ...eventData } : e)))
     } else {
-      const newEvent = await dbAddTimelineEvent(hub.id, eventData as Omit<TimelineEvent, "id">)
+      const newEvent = await provider.addTimelineEvent(hub.id, eventData as Omit<TimelineEvent, "id">)
       if (newEvent) {
         setCustomEvents([...customEvents, newEvent])
       }
@@ -147,7 +138,7 @@ export default function TimelinePage() {
   }
 
   const handleDeleteEvent = async (id: string) => {
-    await dbDeleteTimelineEvent(id)
+    await provider.deleteTimelineEvent(id)
     setCustomEvents(customEvents.filter((e) => e.id !== id))
     setDeleteConfirm(null)
   }
@@ -166,7 +157,7 @@ export default function TimelinePage() {
       ...moveDetails,
       createdDate: dateToISO(startDateValue),
     }
-    await saveMoveDetails(hub.id, updatedDetails)
+    await provider.saveMoveDetails(hub.id, updatedDetails)
     setMoveDetails(updatedDetails)
     setEditingStartDate(false)
   }

@@ -34,9 +34,28 @@ Guidelines for AI assistants when working on this codebase:
 
 See [COMPONENTS.md](./COMPONENTS.md) for detailed code patterns. Key points:
 - Pages use `useHub()` hook to get current hub, show `<HubSetup />` if no hub exists
+- **CRITICAL**: Always use `useDataProvider()` for data access - never import database functions directly
+- Data provider automatically switches between database (authenticated) and localStorage (guest)
 - Database operations are async - pages handle loading states
 - All data tables have `hub_id` foreign key for multi-tenancy
 - Forms use controlled components with useState
+
+### Guest Mode
+
+The app supports guest mode for unauthenticated users:
+- Guests get auto-generated UUID stored in localStorage
+- All data stored in localStorage (scoped by guest UUID)
+- Guest data automatically migrated to database on signup
+- UI shows guest indicators and encourages signup
+- Member management disabled for guests (solo use only)
+
+Key files:
+- `components/providers/auth-provider.tsx` - Guest session management
+- `components/providers/data-provider-provider.tsx` - Storage mode switching
+- `lib/data/local-provider.ts` - localStorage implementation
+- `lib/data/database-provider.ts` - Database implementation
+- `lib/data/migration.ts` - Guest-to-authenticated migration
+- `components/guest-save-prompt.tsx` - Activity-based signup prompt
 
 ### Testing
 

@@ -4,13 +4,8 @@ import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { useHub } from "@/components/providers/hub-provider"
 import { HubSetup } from "@/components/hub-setup"
-import {
-  getTasks,
-  addTask as dbAddTask,
-  updateTask as dbUpdateTask,
-  deleteTask as dbDeleteTask,
-  Task,
-} from "@/lib/supabase/database"
+import { useDataProvider } from "@/lib/data/hooks"
+import type { Task } from "@/lib/supabase/database"
 import { TaskForm } from "@/components/task-form"
 import { ProgressOverview } from "@/components/move-prep/progress-overview"
 import { TasksTab } from "@/components/move-prep/tasks-tab"
@@ -18,6 +13,7 @@ import { DeleteConfirmDialog } from "@/components/move-prep/delete-confirm-dialo
 
 export default function MovePrepPage() {
   const { hub, isLoading: isHubLoading } = useHub()
+  const provider = useDataProvider()
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set())
@@ -29,11 +25,11 @@ export default function MovePrepPage() {
     if (!hub) return
 
     setIsLoading(true)
-    const loadedTasks = await getTasks(hub.id)
+    const loadedTasks = await provider.getTasks(hub.id)
 
     setTasks(loadedTasks)
     setIsLoading(false)
-  }, [hub])
+  }, [hub, provider])
 
   useEffect(() => {
     loadData()
@@ -46,7 +42,7 @@ export default function MovePrepPage() {
     const newStatus: Task["status"] =
       task.status === "completed" ? "pending" : "completed"
 
-    await dbUpdateTask(id, { status: newStatus })
+    await provider.updateTask(id, { status: newStatus })
     setTasks(tasks.map((t) => (t.id === id ? { ...t, status: newStatus } : t)))
   }
 
@@ -67,21 +63,19 @@ export default function MovePrepPage() {
 
     if ("id" in taskData && taskData.id) {
       // Editing existing task
-      await dbUpdateTask(taskData.id, taskData)
+      await provider.updateTask(taskData.id, taskData)
       setTasks(tasks.map((t) => (t.id === taskData.id ? { ...t, ...taskData } : t)))
     } else {
       // Adding new task
-      const newTask = await dbAddTask(hub.id, taskData as Omit<Task, "id">)
-      if (newTask) {
-        setTasks([...tasks, newTask])
-      }
+      const newTask = await provider.addTask(hub.id, taskData as Omit<Task, "id">)
+      setTasks([...tasks, newTask])
     }
     setEditingTask(null)
     setShowAddTaskForm(false)
   }
 
   const handleDeleteTask = async (id: string) => {
-    await dbDeleteTask(id)
+    await provider.deleteTask(id)
     setTasks(tasks.filter((t) => t.id !== id))
     setExpandedTasks((prev) => {
       const next = new Set(prev)

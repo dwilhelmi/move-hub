@@ -12,6 +12,7 @@ import {
   DollarSign,
   Settings,
   LogOut,
+  LogIn,
 } from "lucide-react"
 
 const navigation = [
@@ -29,11 +30,16 @@ interface SidebarContentProps {
 export function SidebarContent({ onLinkClick }: SidebarContentProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { signOut } = useAuth()
+  const { signOut, isGuest } = useAuth()
 
   const handleLogout = async () => {
     onLinkClick?.()
     await signOut()
+    router.push("/login")
+  }
+
+  const handleLogin = () => {
+    onLinkClick?.()
     router.push("/login")
   }
 
@@ -62,6 +68,23 @@ export function SidebarContent({ onLinkClick }: SidebarContentProps) {
         })}
       </nav>
       <div className="border-t px-3 py-4 space-y-1">
+        {isGuest && (
+          <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <p className="text-xs font-medium text-amber-900 dark:text-amber-100 mb-1">
+              Guest Mode
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mb-2">
+              Data stored locally only
+            </p>
+            <Link
+              href="/signup"
+              onClick={onLinkClick}
+              className="block text-center text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded transition-colors"
+            >
+              Sign Up to Save
+            </Link>
+          </div>
+        )}
         <Link
           href="/settings"
           onClick={onLinkClick}
@@ -75,13 +98,23 @@ export function SidebarContent({ onLinkClick }: SidebarContentProps) {
           <Settings className="h-5 w-5" />
           Settings
         </Link>
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-        >
-          <LogOut className="h-5 w-5" />
-          Log out
-        </button>
+        {isGuest ? (
+          <button
+            onClick={handleLogin}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <LogIn className="h-5 w-5" />
+            Log In
+          </button>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            Log out
+          </button>
+        )}
       </div>
     </div>
   )
